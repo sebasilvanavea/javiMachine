@@ -1,0 +1,294 @@
+<div class="user-list-container">
+  <!-- Header con título y botón agregar -->
+  <div class="list-header">
+    <div class="header-info">
+      <h1>
+        <mat-icon>group</mat-icon>
+        Gestión de Usuarios
+      </h1>
+      <p>Administra todos los usuarios del sistema contable</p>
+    </div>
+    <button mat-raised-button 
+            color="primary" 
+            class="add-button"
+            (click)="addNewUser()">
+      <mat-icon>add</mat-icon>
+      Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <mat-card class="search-card">
+    <mat-card-content>
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar usuarios</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput 
+                 [formControl]="searchControl"
+                 placeholder="Nombre, email, RUT, empresa...">
+          <button *ngIf="searchControl.value" 
+                  matSuffix 
+                  mat-icon-button 
+                  aria-label="Clear"
+                  (click)="searchControl.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div class="stats-chips">
+          <mat-chip-set>
+            <mat-chip selected>
+              <mat-icon>group</mat-icon>
+              {{filteredUsers.length}} usuarios
+            </mat-chip>
+            <mat-chip color="accent">
+              <mat-icon>work</mat-icon>
+              {{getTotalServices()}} servicios
+            </mat-chip>
+            <mat-chip color="warn" *ngIf="getPendingServicesCount() > 0">
+              <mat-icon>schedule</mat-icon>
+              {{getPendingServicesCount()}} pendientes
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Indicador de carga -->
+  @if (isLoadingUsers$ | async) {
+    <div class="loading-container">
+      <mat-card>
+        <mat-card-content>
+          <div class="loading-content">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando usuarios...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Estado vacío -->
+  @if (!(isLoadingUsers$ | async) && filteredUsers.length === 0 && users.length === 0) {
+    <div class="empty-state">
+      <mat-card>
+        <mat-card-content>
+          <div class="empty-content">
+            <mat-icon>group_add</mat-icon>
+            <h2>No hay usuarios registrados</h2>
+            <p>Comienza agregando tu primer usuario al sistema</p>
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="addNewUser()">
+              <mat-icon>add</mat-icon>
+              Agregar Primer Usuario
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Sin resultados de búsqueda -->
+  @if (!(isLoadingUsers$ | async) && filteredUsers.length === 0 && users.length > 0) {
+    <div class="no-results">
+      <mat-card>
+        <mat-card-content>
+          <div class="no-results-content">
+            <mat-icon>search_off</mat-icon>
+            <h3>No se encontraron resultados</h3>
+            <p>Intenta con otros términos de búsqueda</p>
+            <button mat-button (click)="searchControl.setValue('')">
+              <mat-icon>clear</mat-icon>
+              Limpiar búsqueda
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Tabla de usuarios -->
+  @if (!(isLoadingUsers$ | async) && filteredUsers.length > 0) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-container">
+          <table mat-table [dataSource]="filteredUsers" class="users-table">
+          
+          <!-- Columna Usuario -->
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>Usuario</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-cell">
+                <div class="user-avatar">
+                  {{getUserInitials(user)}}
+                </div>
+                <div class="user-info">
+                  <div class="user-name">{{user.name}} {{user.lastName}}</div>
+                  <div class="user-email">{{user.email}}</div>
+                  <div class="user-rut">RUT: {{user.rut}}</div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Empresa/Profesión -->
+          <ng-container matColumnDef="company">
+            <th mat-header-cell *matHeaderCellDef>Empresa/Profesión</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="company-cell">
+                <div class="company-name" *ngIf="user.company">{{user.company}}</div>
+                <div class="profession">{{user.profession}}</div>
+                <div class="location">{{user.city}}, {{user.region}}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Contacto -->
+          <ng-container matColumnDef="contact">
+            <th mat-header-cell *matHeaderCellDef>Contacto</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="contact-cell">
+                <div class="phone">
+                  <mat-icon>phone</mat-icon>
+                  {{user.phone}}
+                </div>
+                <div class="address">
+                  <mat-icon>location_on</mat-icon>
+                  {{user.address}}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Servicios -->
+          <ng-container matColumnDef="services">
+            <th mat-header-cell *matHeaderCellDef>Servicios</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="services-cell">
+                <div class="service-stats">
+                  <mat-chip color="primary">
+                    {{getTotalServices(user)}} total
+                  </mat-chip>
+                  <mat-chip [color]="getUserStatusChipColor(user)" 
+                           *ngIf="getPendingServices(user) > 0">
+                    {{getUserStatusText(user)}}
+                  </mat-chip>
+                </div>
+                <div class="service-types" *ngIf="user.services.length > 0">
+                  <small>{{getServiceTypesSummary(user)}}</small>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Estado -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="status-cell">
+                <mat-chip [color]="user.isActive ? 'primary' : ''" 
+                         [class.inactive]="!user.isActive">
+                  <mat-icon>{{user.isActive ? 'check_circle' : 'cancel'}}</mat-icon>
+                  {{user.isActive ? 'Activo' : 'Inactivo'}}
+                </mat-chip>
+                <div class="last-update">
+                  Actualizado: {{formatDate(user.updatedAt)}}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="actions-cell">
+                <button mat-icon-button 
+                        color="primary"
+                        (click)="viewUserDetail(user.id)"
+                        matTooltip="Ver detalles">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                
+                <button mat-icon-button 
+                        color="accent"
+                        (click)="editUser(user.id)"
+                        matTooltip="Editar usuario">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button mat-icon-button 
+                        (click)="addServiceToUser(user)"
+                        matTooltip="Agregar servicio">
+                  <mat-icon>add_business</mat-icon>
+                </button>
+
+                <button mat-icon-button 
+                        [matMenuTriggerFor]="userMenu"
+                        matTooltip="Más opciones">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+
+                <mat-menu #userMenu="matMenu">
+                  <button mat-menu-item (click)="toggleUserStatus(user)">
+                    <mat-icon>{{user.isActive ? 'block' : 'check_circle'}}</mat-icon>
+                    <span>{{user.isActive ? 'Desactivar' : 'Activar'}}</span>
+                  </button>
+                  
+                  <button mat-menu-item (click)="duplicateUser(user)">
+                    <mat-icon>content_copy</mat-icon>
+                    <span>Duplicar</span>
+                  </button>
+                  
+                  <mat-divider></mat-divider>
+                  
+                  <button mat-menu-item 
+                          (click)="deleteUser(user)"
+                          [disabled]="isDeletingUser(user.id) | async"
+                          class="delete-action">
+                    <mat-icon>
+                      @if (isDeletingUser(user.id) | async) {
+                        <mat-spinner diameter="18"></mat-spinner>
+                      } @else {
+                        delete
+                      }
+                    </mat-icon>
+                    <span>
+                      @if (isDeletingUser(user.id) | async) {
+                        Eliminando...
+                      } @else {
+                        Eliminar
+                      }
+                    </span>
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="user-row"
+              [class.inactive-row]="!row.isActive"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <!-- Información de paginación -->
+  @if (!(isLoadingUsers$ | async) && users.length > 0) {
+    <mat-card>
+      <mat-card-content>
+        <p class="pagination-info">
+          Mostrando {{filteredUsers.length}} de {{users.length}} usuarios
+        </p>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+
+<!-- Dialogs y modales se pueden agregar aquí -->

@@ -1,0 +1,242 @@
+<div class="user-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title class="form-title">
+        <mat-icon>{{ isEditing ? 'edit' : 'person_add' }}</mat-icon>
+        {{ getFormTitle() }}
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="isEditing">
+        Modifica la información del usuario
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-progress-spinner 
+          mode="indeterminate" 
+          diameter="50">
+        </mat-progress-spinner>
+        <p>Cargando información del usuario...</p>
+      </div>
+
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+        <mat-stepper #stepper linear="false" class="user-stepper">
+          
+          <!-- PASO 1: Información Personal -->
+          <mat-step [stepControl]="userForm.get('personalInfo')!" [completed]="isStepValid(0)">
+            <ng-template matStepLabel>Información Personal</ng-template>
+            
+            <div formGroupName="personalInfo" class="step-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nombre</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="name" 
+                    placeholder="Ingresa el nombre"
+                    required>
+                  <mat-icon matSuffix>person</mat-icon>
+                  <mat-error>{{ getErrorMessage('personalInfo', 'name') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Apellido</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="lastName" 
+                    placeholder="Ingresa el apellido"
+                    required>
+                  <mat-icon matSuffix>person</mat-icon>
+                  <mat-error>{{ getErrorMessage('personalInfo', 'lastName') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>RUT</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="rut" 
+                    placeholder="12.345.678-9"
+                    (input)="formatRut($event)"
+                    maxlength="12"
+                    required>
+                  <mat-icon matSuffix>badge</mat-icon>
+                  <mat-error>{{ getErrorMessage('personalInfo', 'rut') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input 
+                    matInput 
+                    type="email"
+                    formControlName="email" 
+                    placeholder="ejemplo@correo.com"
+                    required>
+                  <mat-icon matSuffix>email</mat-icon>
+                  <mat-error>{{ getErrorMessage('personalInfo', 'email') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Teléfono</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="phone" 
+                    placeholder="+56912345678"
+                    (input)="formatPhone($event)"
+                    required>
+                  <mat-icon matSuffix>phone</mat-icon>
+                  <mat-error>{{ getErrorMessage('personalInfo', 'phone') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-raised-button color="primary" matStepperNext>
+                Siguiente
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- PASO 2: Información de Ubicación -->
+          <mat-step [stepControl]="userForm.get('locationInfo')!" [completed]="isStepValid(1)">
+            <ng-template matStepLabel>Ubicación</ng-template>
+            
+            <div formGroupName="locationInfo" class="step-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Dirección</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="address" 
+                    placeholder="Calle, número, departamento"
+                    required>
+                  <mat-icon matSuffix>home</mat-icon>
+                  <mat-error>{{ getErrorMessage('locationInfo', 'address') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Ciudad</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="city" 
+                    placeholder="Ciudad"
+                    required>
+                  <mat-icon matSuffix>location_city</mat-icon>
+                  <mat-error>{{ getErrorMessage('locationInfo', 'city') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Región</mat-label>
+                  <mat-select formControlName="region" required>
+                    <mat-option value="">Selecciona una región</mat-option>
+                    <mat-option *ngFor="let region of regions" [value]="region">
+                      {{ region }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('locationInfo', 'region') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Anterior
+              </button>
+              <button mat-raised-button color="primary" matStepperNext>
+                Siguiente
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- PASO 3: Información Profesional -->
+          <mat-step [stepControl]="userForm.get('professionalInfo')!" [completed]="isStepValid(2)">
+            <ng-template matStepLabel>Información Profesional</ng-template>
+            
+            <div formGroupName="professionalInfo" class="step-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Empresa (Opcional)</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="company" 
+                    placeholder="Nombre de la empresa">
+                  <mat-icon matSuffix>business</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Profesión</mat-label>
+                  <mat-select formControlName="profession" required>
+                    <mat-option value="">Selecciona una profesión</mat-option>
+                    <mat-option *ngFor="let profession of professions" [value]="profession">
+                      {{ profession }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('professionalInfo', 'profession') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-checkbox formControlName="isActive" class="active-checkbox">
+                  Usuario activo
+                </mat-checkbox>
+                <p class="checkbox-hint">
+                  Los usuarios inactivos no podrán acceder al sistema
+                </p>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Anterior
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+
+        <mat-divider class="form-divider"></mat-divider>
+
+        <!-- ACCIONES DEL FORMULARIO -->
+        <div class="form-actions">
+          <button 
+            mat-button 
+            type="button" 
+            (click)="cancel()"
+            class="cancel-button">
+            <mat-icon>cancel</mat-icon>
+            Cancelar
+          </button>
+
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="!userForm.valid || isLoading"
+            class="submit-button">
+            <mat-progress-spinner 
+              *ngIf="isLoading" 
+              mode="indeterminate" 
+              diameter="20">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!isLoading">{{ isEditing ? 'save' : 'person_add' }}</mat-icon>
+            {{ getSubmitButtonText() }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

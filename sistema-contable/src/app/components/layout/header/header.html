@@ -1,0 +1,102 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <div class="toolbar-content">
+    <!-- Logo y título -->
+    <div class="brand">
+      <mat-icon class="brand-icon">account_balance</mat-icon>
+      <span class="brand-title" routerLink="/dashboard">Sistema Contable</span>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="navigation" *ngIf="currentUser$ | async as user">
+      <button mat-button routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        <span class="nav-label">Dashboard</span>
+      </button>
+      
+      <button mat-button routerLink="/users" routerLinkActive="active">
+        <mat-icon>group</mat-icon>
+        <span class="nav-label">Usuarios</span>
+      </button>
+      
+      <button mat-button routerLink="/services" routerLinkActive="active">
+        <mat-icon>work</mat-icon>
+        <span class="nav-label">Servicios</span>
+      </button>
+      
+      <button mat-button routerLink="/form21" routerLinkActive="active">
+        <mat-icon>description</mat-icon>
+        <span class="nav-label">Formulario 21</span>
+      </button>
+    </nav>
+
+    <!-- Acciones del usuario -->
+    <div class="user-actions" *ngIf="currentUser$ | async as user">
+      <!-- Notificaciones -->
+      <button mat-icon-button 
+              [matBadge]="3" 
+              matBadgeColor="warn" 
+              matBadgeSize="small"
+              matTooltip="Notificaciones">
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <!-- Menú de usuario -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
+        <div class="user-info">
+          <div class="user-avatar" *ngIf="!user.photoUrl">
+            {{getUserInitials(user)}}
+          </div>
+          <img *ngIf="user.photoUrl" 
+               [src]="user.photoUrl" 
+               [alt]="user.name" 
+               class="user-photo">
+          <div class="user-details">
+            <span class="user-name">{{user.name}}</span>
+            <span class="user-email">{{user.email}}</span>
+          </div>
+        </div>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-dropdown">
+        <div class="user-menu-header">
+          <div class="user-avatar-large" *ngIf="!user.photoUrl">
+            {{getUserInitials(user)}}
+          </div>
+          <img *ngIf="user.photoUrl" 
+               [src]="user.photoUrl" 
+               [alt]="user.name" 
+               class="user-photo-large">
+          <div class="user-info-large">
+            <div class="user-name-large">{{user.name}}</div>
+            <div class="user-email-large">{{user.email}}</div>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Mi Perfil</span>
+        </button>
+        
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </button>
+        
+        <button mat-menu-item>
+          <mat-icon>help</mat-icon>
+          <span>Ayuda</span>
+        </button>
+        
+        <mat-divider></mat-divider>
+        
+        <button mat-menu-item (click)="logout()" class="logout-item">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

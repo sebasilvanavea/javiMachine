@@ -1,0 +1,383 @@
+.dashboard-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+  
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 300;
+    color: #333;
+    
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+      color: #3f51b5;
+    }
+  }
+  
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.quick-actions-card {
+  margin-bottom: 32px;
+  
+  mat-card-header {
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      mat-icon {
+        color: #ff9800;
+      }
+    }
+  }
+  
+  .quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      
+      mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+.stat-card {
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  .stat-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .stat-info {
+      flex: 1;
+      
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 36px;
+        font-weight: 600;
+        line-height: 1;
+      }
+      
+      p {
+        margin: 0 0 8px 0;
+        color: #666;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+    
+    .stat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.7;
+    }
+  }
+}
+
+.users-card {
+  .stat-info h3 { color: #4caf50; }
+  .stat-icon { color: #4caf50; }
+}
+
+.services-card {
+  .stat-info h3 { color: #2196f3; }
+  .stat-icon { color: #2196f3; }
+}
+
+.pending-card {
+  .stat-info h3 { color: #ff9800; }
+  .stat-icon { color: #ff9800; }
+}
+
+.revenue-card {
+  .stat-info h3 { color: #9c27b0; }
+  .stat-icon { color: #9c27b0; }
+}
+
+.growth-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    
+    &.positive { color: #4caf50; }
+    &.negative { color: #f44336; }
+  }
+  
+  span {
+    &.positive { color: #4caf50; }
+    &.negative { color: #f44336; }
+  }
+}
+
+.sub-stats {
+  font-size: 12px;
+  
+  .completed { color: #4caf50; }
+  .overdue { color: #f44336; }
+}
+
+.pending-services-card {
+  margin-bottom: 32px;
+  
+  mat-card-header {
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      mat-chip-set {
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+.loading-container {
+  text-align: center;
+  padding: 40px 0;
+  
+  mat-progress-bar {
+    margin-bottom: 16px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 0;
+  
+  mat-icon {
+    font-size: 72px;
+    width: 72px;
+    height: 72px;
+    color: #4caf50;
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+  
+  p {
+    margin: 0 0 24px 0;
+    color: #666;
+  }
+}
+
+.pending-services-table {
+  width: 100%;
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .user-details {
+      .user-name {
+        font-weight: 500;
+        color: #333;
+      }
+      
+      .user-email {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+  }
+  
+  .service-info {
+    .service-type {
+      font-weight: 500;
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .service-description {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+  }
+  
+  .amount {
+    font-weight: 600;
+    color: #2196f3;
+  }
+  
+  .due-date {
+    .date {
+      font-weight: 500;
+    }
+    
+    .days-left {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+      
+      &.negative {
+        color: #f44336;
+        font-weight: 500;
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+    
+    &.overdue {
+      .date {
+        color: #f44336;
+      }
+    }
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.analytics-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.chart-card {
+  .chart-placeholder {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+    
+    p {
+      margin: 0 0 8px 0;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    small {
+      color: #999;
+      font-style: italic;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .analytics-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .pending-services-table {
+    font-size: 14px;
+    
+    .displayedColumns {
+      display: none;
+    }
+    
+    // Simplificar tabla en móvil
+    th:nth-child(n+4),
+    td:nth-child(n+4) {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 24px;
+  }
+  
+  .stat-card .stat-content {
+    .stat-info h3 {
+      font-size: 28px;
+    }
+    
+    .stat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+}

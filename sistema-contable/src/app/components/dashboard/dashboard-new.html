@@ -1,0 +1,285 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div>
+      <h1>
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </h1>
+      <p>Resumen general del sistema contable</p>
+    </div>
+    <button mat-icon-button 
+            (click)="refreshDashboard()" 
+            matTooltip="Actualizar dashboard"
+            [disabled]="(isLoadingStats$ | async) || (isLoadingServices$ | async)">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- Indicador de carga global -->
+  @if (isLoadingStats$ | async) {
+    <div class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Cargando estadísticas...</p>
+    </div>
+  }
+
+  <!-- Estadísticas principales -->
+  @if (stats$ | async; as stats) {
+    <div class="stats-grid">
+      <mat-card class="stat-card users-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3>{{stats.totalUsers}}</h3>
+              <p>Total Usuarios</p>
+              <div class="growth-indicator">
+                <mat-icon [class]="getUserGrowthIcon(stats) === 'trending_up' ? 'positive' : 'negative'">
+                  {{getUserGrowthIcon(stats)}}
+                </mat-icon>
+                <span [class]="stats.userGrowthPercentage > 0 ? 'positive' : 'negative'">
+                  {{stats.userGrowthPercentage}}%
+                </span>
+              </div>
+            </div>
+            <mat-icon class="stat-icon">group</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card services-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3>{{stats.totalServices}}</h3>
+              <p>Total Servicios</p>
+              <div class="sub-stats">
+                <span class="completed">{{stats.completedServicesThisMonth}} este mes</span>
+              </div>
+            </div>
+            <mat-icon class="stat-icon">work</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card pending-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3 [matBadge]="stats.overdueServices" 
+                  [matBadgeHidden]="stats.overdueServices === 0" 
+                  matBadgeColor="warn">
+                {{stats.pendingServices}}
+              </h3>
+              <p>Servicios Pendientes</p>
+              @if (stats.overdueServices > 0) {
+                <div class="sub-stats">
+                  <span class="overdue">{{stats.overdueServices}} vencidos</span>
+                </div>
+              }
+            </div>
+            <mat-icon class="stat-icon">pending_actions</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card revenue-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3>{{formatAmount(stats.monthlyRevenue)}}</h3>
+              <p>Ingresos del Mes</p>
+              <div class="growth-indicator">
+                <mat-icon [class]="getRevenueGrowthIcon(stats) === 'trending_up' ? 'positive' : 'negative'">
+                  {{getRevenueGrowthIcon(stats)}}
+                </mat-icon>
+                <span [class]="stats.revenueGrowthPercentage > 0 ? 'positive' : 'negative'">
+                  {{stats.revenueGrowthPercentage}}%
+                </span>
+              </div>
+            </div>
+            <mat-icon class="stat-icon">attach_money</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Servicios Pendientes -->
+  <mat-card class="pending-services-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>schedule</mat-icon>
+        Servicios Pendientes
+        @if (pendingServices$ | async; as pendingServices) {
+          @if (pendingServices.length > 0) {
+            <mat-chip-set>
+              <mat-chip [color]="getChipColor(pendingServices)">
+                {{pendingServices.length}} total
+              </mat-chip>
+            </mat-chip-set>
+          }
+        }
+      </mat-card-title>
+      <mat-card-subtitle>
+        Servicios que requieren atención
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoadingServices$ | async) {
+        <div class="loading-container">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <p>Cargando servicios pendientes...</p>
+        </div>
+      }
+
+      @if (pendingServices$ | async; as pendingServices) {
+        @if (pendingServices.length === 0) {
+          <div class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <h3>¡Excelente trabajo!</h3>
+            <p>No hay servicios pendientes en este momento</p>
+            <button mat-raised-button color="primary" (click)="navigateToUsers()">
+              <mat-icon>add</mat-icon>
+              Agregar Nuevo Usuario
+            </button>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="pendingServices" class="pending-services-table">
+            <!-- Columna Usuario -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>Usuario</th>
+              <td mat-cell *matCellDef="let element">
+                <div class="user-info">
+                  <div class="user-avatar">
+                    {{element.user.name.charAt(0)}}{{element.user.lastName.charAt(0)}}
+                  </div>
+                  <div class="user-details">
+                    <div class="user-name">{{element.user.name}} {{element.user.lastName}}</div>
+                    <div class="user-email">{{element.user.email}}</div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Servicio -->
+            <ng-container matColumnDef="service">
+              <th mat-header-cell *matHeaderCellDef>Servicio</th>
+              <td mat-cell *matCellDef="let element">
+                <div class="service-info">
+                  <div class="service-type">{{element.service.type}}</div>
+                  <div class="service-description">{{element.service.description}}</div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Monto -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Monto</th>
+              <td mat-cell *matCellDef="let element" class="amount">
+                {{formatAmount(element.service.amount)}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Fecha Vencimiento -->
+            <ng-container matColumnDef="dueDate">
+              <th mat-header-cell *matHeaderCellDef>Vencimiento</th>
+              <td mat-cell *matCellDef="let element" 
+                  [class.overdue]="isOverdue(element.service)"
+                  class="due-date">
+                <div class="date">{{formatDate(element.service.dueDate)}}</div>
+                <div class="days-left" 
+                     [class.negative]="getDaysUntilDue(element.service.dueDate) < 0">
+                  @if (getDaysUntilDue(element.service.dueDate) < 0) {
+                    <mat-icon>warning</mat-icon>
+                    {{Math.abs(getDaysUntilDue(element.service.dueDate))}} días vencido
+                  } @else {
+                    {{getDaysUntilDue(element.service.dueDate)}} días restantes
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Estado -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-chip [color]="getStatusColor(element.service.status)">
+                  {{getStatusText(element.service.status)}}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Columna Acciones -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let element">
+                <div class="action-buttons">
+                  <button mat-icon-button 
+                          (click)="navigateToUserDetail(element.user.id)"
+                          matTooltip="Ver Usuario">
+                    <mat-icon>person</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          (click)="viewServiceDetail(element.user.id, element.service.id)"
+                          matTooltip="Ver Servicio">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        }
+      }
+    </mat-card-content>
+
+    @if (pendingServices$ | async; as pendingServices) {
+      @if (pendingServices.length > 0) {
+        <mat-card-actions>
+          <button mat-button color="primary" (click)="navigateToUsers()">
+            <mat-icon>group</mat-icon>
+            Ver Todos los Usuarios
+          </button>
+        </mat-card-actions>
+      }
+    }
+  </mat-card>
+
+  <!-- Gráficos y Analytics -->
+  <div class="analytics-section">
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bar_chart</mat-icon>
+          Análisis Mensual
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-placeholder">
+          <mat-icon>timeline</mat-icon>
+          <p>Gráfico de tendencias mensuales</p>
+          <small>Próximamente: Integración con Chart.js</small>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>pie_chart</mat-icon>
+          Distribución de Servicios
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-placeholder">
+          <mat-icon>donut_large</mat-icon>
+          <p>Distribución por tipo de servicio</p>
+          <small>Próximamente: Gráfico de dona</small>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

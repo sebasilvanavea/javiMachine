@@ -1,0 +1,473 @@
+.user-list-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+}
+
+// ===== HEADER =====
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .header-info {
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 8px 0;
+      font-size: 32px;
+      font-weight: 300;
+      color: #333;
+      
+      mat-icon {
+        font-size: 36px;
+        width: 36px;
+        height: 36px;
+        color: #3f51b5;
+      }
+    }
+    
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 16px;
+    }
+  }
+
+  .add-button {
+    height: 48px;
+    border-radius: 12px;
+    padding: 0 24px;
+    font-weight: 500;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// ===== BÚSQUEDA Y FILTROS =====
+.search-card {
+  margin-bottom: 24px;
+  
+  .search-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    
+    .search-field {
+      flex: 1;
+      min-width: 300px;
+      
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+    }
+    
+    .stats-chips {
+      mat-chip-set {
+        mat-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ===== ESTADOS VACÍOS =====
+.loading-container,
+.empty-state,
+.no-results {
+  margin: 40px 0;
+  
+  .loading-content,
+  .empty-content,
+  .no-results-content {
+    text-align: center;
+    padding: 60px 20px;
+    
+    mat-icon {
+      font-size: 72px;
+      width: 72px;
+      height: 72px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+    
+    mat-spinner {
+      margin: 0 auto 16px;
+    }
+    
+    h2, h3 {
+      margin: 0 0 8px 0;
+      color: #333;
+    }
+    
+    p {
+      margin: 0 0 24px 0;
+      color: #666;
+    }
+  }
+}
+
+// ===== TABLA =====
+.table-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  
+  .table-container {
+    overflow-x: auto;
+    
+    .users-table {
+      width: 100%;
+      
+      // Header
+      .mat-mdc-header-cell {
+        background-color: #f8f9fa;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid #e9ecef;
+        padding: 16px 12px;
+      }
+      
+      // Filas
+      .mat-mdc-cell {
+        padding: 16px 12px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .user-row {
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: #f8f9fa;
+        }
+        
+        &.inactive-row {
+          opacity: 0.6;
+          background-color: #fafafa;
+        }
+      }
+    }
+  }
+}
+
+// ===== CELDAS DE LA TABLA =====
+
+// Celda de usuario
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3f51b5, #5c6bc0);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  
+  .user-info {
+    min-width: 0; // Para permitir text-overflow
+    
+    .user-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    
+    .user-email {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 2px;
+      word-break: break-word;
+    }
+    
+    .user-rut {
+      color: #999;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+    }
+  }
+}
+
+// Celda de empresa
+.company-cell {
+  .company-name {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+  }
+  
+  .profession {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  
+  .location {
+    color: #999;
+    font-size: 12px;
+  }
+}
+
+// Celda de contacto
+.contact-cell {
+  .phone,
+  .address {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: #666;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #999;
+    }
+  }
+  
+  .address {
+    margin-bottom: 0;
+  }
+}
+
+// Celda de servicios
+.services-cell {
+  .service-stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    
+    mat-chip {
+      font-size: 12px;
+      height: 24px;
+      
+      &[color="warn"] {
+        animation: pulse 2s infinite;
+      }
+    }
+  }
+  
+  .service-types {
+    small {
+      color: #666;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+  }
+}
+
+// Celda de estado
+.status-cell {
+  .inactive {
+    background-color: #f5f5f5 !important;
+    color: #666 !important;
+  }
+  
+  .last-update {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #999;
+  }
+}
+
+// Celda de acciones
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  button {
+    width: 36px;
+    height: 36px;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+  
+  .delete-action {
+    color: #f44336;
+    
+    mat-icon {
+      color: #f44336;
+    }
+  }
+}
+
+// ===== PAGINACIÓN =====
+.pagination-container {
+  margin-top: 16px;
+  
+  .pagination-info {
+    text-align: center;
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// ===== ANIMACIONES =====
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+  }
+}
+
+// ===== RESPONSIVE DESIGN =====
+@media (max-width: 1200px) {
+  .user-list-container {
+    padding: 16px;
+  }
+  
+  .search-section {
+    .search-field {
+      min-width: 250px;
+    }
+  }
+  
+  // Ocultar algunas columnas en tablets
+  .users-table {
+    .hide-tablet {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .list-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    
+    .add-button {
+      width: 100%;
+    }
+  }
+  
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .search-field {
+      min-width: auto;
+    }
+    
+    .stats-chips {
+      mat-chip-set {
+        justify-content: center;
+      }
+    }
+  }
+  
+  // Tabla responsive para móviles
+  .table-container {
+    .users-table {
+      min-width: 700px; // Forzar scroll horizontal
+    }
+  }
+  
+  // Simplificar celdas en móvil
+  .user-cell {
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+  
+  .actions-cell {
+    flex-direction: column;
+    gap: 2px;
+    
+    button {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .user-list-container {
+    padding: 12px;
+  }
+  
+  .list-header {
+    .header-info h1 {
+      font-size: 24px;
+      
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+  }
+  
+  // Hacer tabla más compacta
+  .users-table {
+    .mat-mdc-header-cell,
+    .mat-mdc-cell {
+      padding: 12px 8px;
+    }
+  }
+}
+
+// ===== TEMA OSCURO (OPCIONAL) =====
+@media (prefers-color-scheme: dark) {
+  .user-list-container {
+    color: #e0e0e0;
+  }
+  
+  .list-header .header-info h1 {
+    color: #e0e0e0;
+  }
+  
+  .users-table {
+    .mat-mdc-header-cell {
+      background-color: #424242;
+      color: #e0e0e0;
+    }
+    
+    .user-row:hover {
+      background-color: #424242;
+    }
+  }
+}
