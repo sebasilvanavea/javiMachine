@@ -2,10 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError, from } from 'rxjs';
 import { AuthUser, LoginRequest, LoginResponse } from '../models/auth.model';
 import { SocialAuthService, GoogleLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
-import { delay, map, catchError } from 'rxjs/operators';
-import { Auth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, user, User } from '@angular/fire/auth';
+import { delay, map, catchError, take, switchMap } from 'rxjs/operators';
+import { Auth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, user, User, onAuthStateChanged } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { FirebaseErrorService } from './firebase-error.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,35 +17,75 @@ export class AuthService {
   private auth = inject(Auth);
   private router = inject(Router);
   private socialAuthService = inject(SocialAuthService);
-  private firebaseErrorService = inject(FirebaseErrorService);
+  private notificationService = inject(NotificationService);
   
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
+  
+  private authStateInitialized = false;
 
   constructor() {
+    // Deferimos la inicialización para evitar problemas de contexto de inyección
+    setTimeout(() => this.initializeAuthState(), 0);
+  }
+
+  /**
+   * Inicializa el estado de autenticación y configura los listeners
+   */
+  private initializeAuthState(): void {
     // Escuchar cambios en Firebase Auth
-    user(this.auth).subscribe((firebaseUser: User | null) => {
+    onAuthStateChanged(this.auth, (firebaseUser: User | null) => {
       if (firebaseUser) {
         const authUser: AuthUser = {
           id: firebaseUser.uid,
           email: firebaseUser.email!,
-          name: firebaseUser.displayName || '',
+          name: firebaseUser.displayName || firebaseUser.email!,
           role: 'admin',
           photoUrl: firebaseUser.photoURL || undefined,
-          provider: 'google'
+          provider: this.detectProvider(firebaseUser),
+          token: 'firebase-token'
         };
         this.setCurrentUser(authUser);
+        
+        // Redireccionar al dashboard si estamos en login
+        if (this.router.url === '/login' || this.router.url === '/') {
+          this.router.navigate(['/dashboard']);
+        }
       } else {
-        this.setCurrentUser(null);
+        // Solo limpiar usuario si ya estaba inicializado
+        if (this.authStateInitialized) {
+          this.setCurrentUser(null);
+        }
       }
+      this.authStateInitialized = true;
     });
 
-    // Escuchar cambios en la autenticación social
-    this.socialAuthService.authState.subscribe((user: SocialUser) => {
-      if (user) {
-        this.handleSocialLogin(user);
-      }
-    });
+    // Escuchar cambios en la autenticación social (backup) con manejo de errores
+    try {
+      this.socialAuthService.authState.subscribe({
+        next: (user: SocialUser) => {
+          if (user && !this.auth.currentUser) {
+            this.handleSocialLogin(user);
+          }
+        },
+        error: (error) => {
+          console.warn('⚠️ Social Auth State Error (non-critical):', error);
+        }
+      });
+    } catch (error) {
+      console.warn('⚠️ Error inicializando Social Auth (non-critical):', error);
+    }
+  }
+
+  /**
+   * Detecta el proveedor de autenticación basado en la información del usuario
+   */
+  private detectProvider(user: User): 'google' | 'email' {
+    if (user.providerData && user.providerData.length > 0) {
+      const providerId = user.providerData[0].providerId;
+      return providerId === 'google.com' ? 'google' : 'email';
+    }
+    return 'email';
   }
 
   private setCurrentUser(user: AuthUser | null): void {
@@ -105,9 +145,14 @@ export class AuthService {
       );
   }
 
-  // Login con Google usando Firebase
+  /**
+   * Login con Google usando Firebase Auth con popup
+   */
   loginWithGoogle(): Observable<AuthUser> {
     const provider = new GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+    
     return from(signInWithPopup(this.auth, provider))
       .pipe(
         map(result => {
@@ -115,17 +160,32 @@ export class AuthService {
           const authUser: AuthUser = {
             id: user.uid,
             email: user.email!,
-            name: user.displayName || '',
+            name: user.displayName || user.email!,
             photoUrl: user.photoURL || undefined,
             provider: 'google',
-            role: 'admin'
+            role: 'admin',
+            token: 'firebase-token'
           };
-          this.setCurrentUser(authUser);
+          
+          this.notificationService.showSuccess('Inicio de sesión exitoso', `¡Bienvenido ${authUser.name}!`);
           return authUser;
         }),
         catchError(error => {
           console.error('Error en login con Google:', error);
-          return throwError(() => new Error('Error al iniciar sesión con Google: ' + error.message));
+          
+          // Manejar errores específicos
+          let errorMessage = 'Error al iniciar sesión con Google';
+          
+          if (error.code === 'auth/popup-closed-by-user') {
+            errorMessage = 'Inicio de sesión cancelado por el usuario';
+          } else if (error.code === 'auth/popup-blocked') {
+            errorMessage = 'Popup bloqueado por el navegador. Por favor, permite popups para este sitio';
+          } else if (error.code === 'auth/network-request-failed') {
+            errorMessage = 'Error de conexión. Verifica tu conexión a internet';
+          }
+          
+          this.notificationService.showError('Error de autenticación', errorMessage);
+          return throwError(() => new Error(errorMessage));
         })
       );
   }
@@ -171,21 +231,57 @@ export class AuthService {
     this.setCurrentUser(authUser);
   }
 
+  /**
+   * Cierra la sesión del usuario
+   */
   logout(): Observable<boolean> {
     return from(signOut(this.auth)).pipe(
       map(() => {
-        this.socialAuthService.signOut();
+        // Cerrar sesión social también
+        this.socialAuthService.signOut().catch(error => {
+          console.warn('Error al cerrar sesión social:', error);
+        });
+        
         this.setCurrentUser(null);
+        this.notificationService.showSuccess('Sesión cerrada', 'Has cerrado sesión correctamente');
         this.router.navigate(['/login']);
         return true;
       }),
       catchError(error => {
         console.error('Error en logout:', error);
+        // Forzar limpieza local aunque falle Firebase
         this.setCurrentUser(null);
         this.router.navigate(['/login']);
         return of(true);
       })
     );
+  }
+
+  /**
+   * Verifica si hay una sesión activa y válida
+   */
+  checkAuthState(): Observable<AuthUser | null> {
+    return this.currentUser$.pipe(take(1));
+  }
+
+  /**
+   * Obtiene el token del usuario actual
+   */
+  async getAuthToken(): Promise<string | null> {
+    if (this.auth.currentUser) {
+      return await this.auth.currentUser.getIdToken();
+    }
+    return null;
+  }
+
+  /**
+   * Refresca el token del usuario actual
+   */
+  async refreshAuthToken(): Promise<string | null> {
+    if (this.auth.currentUser) {
+      return await this.auth.currentUser.getIdToken(true);
+    }
+    return null;
   }
 
   refreshToken(): Observable<LoginResponse> {

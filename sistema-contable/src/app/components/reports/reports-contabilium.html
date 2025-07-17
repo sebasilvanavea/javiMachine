@@ -1,0 +1,320 @@
+<div class="contabilium-reports"></div>
+  <!-- Header Profesional -->
+  <header class="reports-hero">
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">
+          <mat-icon>analytics</mat-icon>
+          Reportes
+        </div>
+        <h1 class="hero-title">Centro de Reportes</h1>
+        <p class="hero-subtitle">Analiza y exporta información detallada de tu negocio</p>
+      </div>
+      
+      <div class="hero-right">
+        <button mat-flat-button 
+                color="primary"
+                class="contabilium-btn primary"
+                (click)="generateAllReports()">
+          <mat-icon>download</mat-icon>
+          Descargar Todo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="reports-content">
+    <!-- Métricas Rápidas -->
+    @if (quickStats$ | async; as stats) {
+      <section class="quick-metrics">
+        <div class="metrics-grid">
+          <div class="metric-card primary">
+            <div class="metric-icon">
+              <mat-icon>assignment</mat-icon>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">{{stats.totalServices}}</div>
+              <div class="metric-label">Total Servicios</div>
+            </div>
+          </div>
+
+          <div class="metric-card success">
+            <div class="metric-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">{{stats.totalUsers}}</div>
+              <div class="metric-label">Usuarios Activos</div>
+            </div>
+          </div>
+
+          <div class="metric-card warning">
+            <div class="metric-icon">
+              <mat-icon>attach_money</mat-icon>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">${{stats.totalRevenue | number:'1.0-0'}}</div>
+              <div class="metric-label">Ingresos Totales</div>
+            </div>
+          </div>
+
+          <div class="metric-card info">
+            <div class="metric-icon">
+              <mat-icon>pending_actions</mat-icon>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">{{stats.pendingServices}}</div>
+              <div class="metric-label">Servicios Pendientes</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Generadores de Reportes -->
+    <section class="report-generators">
+      <div class="section-header">
+        <h2>
+          <mat-icon>description</mat-icon>
+          Generadores de Reportes
+        </h2>
+        <p>Selecciona el tipo de reporte que necesitas generar</p>
+      </div>
+
+      <div class="generators-grid">
+        <!-- Reporte de Usuarios -->
+        <div class="generator-card">
+          <div class="card-header">
+            <div class="card-icon users">
+              <mat-icon>group</mat-icon>
+            </div>
+            <div class="card-title">
+              <h3>Reporte de Usuarios</h3>
+              <p>Lista completa de usuarios y sus servicios</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="date-range">
+              <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Desde</mat-label>
+                <input matInput [matDatepicker]="userStartPicker" [(ngModel)]="userDateRange.start">
+                <mat-datepicker-toggle matSuffix [for]="userStartPicker"></mat-datepicker-toggle>
+                <mat-datepicker #userStartPicker></mat-datepicker>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Hasta</mat-label>
+                <input matInput [matDatepicker]="userEndPicker" [(ngModel)]="userDateRange.end">
+                <mat-datepicker-toggle matSuffix [for]="userEndPicker"></mat-datepicker-toggle>
+                <mat-datepicker #userEndPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            
+            <div class="export-options">
+              <button mat-stroked-button (click)="exportUserReport('pdf')" class="export-btn">
+                <mat-icon>picture_as_pdf</mat-icon>
+                PDF
+              </button>
+              <button mat-stroked-button (click)="exportUserReport('excel')" class="export-btn">
+                <mat-icon>table_chart</mat-icon>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reporte de Servicios -->
+        <div class="generator-card">
+          <div class="card-header">
+            <div class="card-icon services">
+              <mat-icon>work</mat-icon>
+            </div>
+            <div class="card-title">
+              <h3>Reporte de Servicios</h3>
+              <p>Análisis detallado de servicios prestados</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="filters">
+              <mat-form-field appearance="outline">
+                <mat-label>Estado del Servicio</mat-label>
+                <mat-select [(ngModel)]="serviceFilters.status" multiple>
+                  <mat-option value="PENDING">Pendiente</mat-option>
+                  <mat-option value="IN_PROGRESS">En Progreso</mat-option>
+                  <mat-option value="COMPLETED">Completado</mat-option>
+                  <mat-option value="OVERDUE">Vencido</mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de Servicio</mat-label>
+                <mat-select [(ngModel)]="serviceFilters.type" multiple>
+                  <mat-option value="FORM_21">Formulario 21</mat-option>
+                  <mat-option value="TAX_DECLARATION">Declaración Impuestos</mat-option>
+                  <mat-option value="ACCOUNTING">Contabilidad</mat-option>
+                  <mat-option value="PAYROLL">Nómina</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="export-options">
+              <button mat-stroked-button (click)="exportServiceReport('pdf')" class="export-btn">
+                <mat-icon>picture_as_pdf</mat-icon>
+                PDF
+              </button>
+              <button mat-stroked-button (click)="exportServiceReport('excel')" class="export-btn">
+                <mat-icon>table_chart</mat-icon>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reporte Financiero -->
+        <div class="generator-card">
+          <div class="card-header">
+            <div class="card-icon financial">
+              <mat-icon>account_balance</mat-icon>
+            </div>
+            <div class="card-title">
+              <h3>Reporte Financiero</h3>
+              <p>Análisis de ingresos y rentabilidad</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="period-selector">
+              <mat-button-toggle-group [(ngModel)]="financialPeriod" class="period-toggle">
+                <mat-button-toggle value="monthly">Mensual</mat-button-toggle>
+                <mat-button-toggle value="quarterly">Trimestral</mat-button-toggle>
+                <mat-button-toggle value="yearly">Anual</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            
+            <div class="export-options">
+              <button mat-stroked-button (click)="exportFinancialReport('pdf')" class="export-btn">
+                <mat-icon>picture_as_pdf</mat-icon>
+                PDF
+              </button>
+              <button mat-stroked-button (click)="exportFinancialReport('excel')" class="export-btn">
+                <mat-icon>table_chart</mat-icon>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reporte de Productividad -->
+        <div class="generator-card">
+          <div class="card-header">
+            <div class="card-icon productivity">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="card-title">
+              <h3>Productividad</h3>
+              <p>Métricas de eficiencia y rendimiento</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="metrics-selector">
+              <mat-checkbox [(ngModel)]="productivityMetrics.completionRate">
+                Tasa de Completación
+              </mat-checkbox>
+              <mat-checkbox [(ngModel)]="productivityMetrics.averageTime">
+                Tiempo Promedio
+              </mat-checkbox>
+              <mat-checkbox [(ngModel)]="productivityMetrics.clientSatisfaction">
+                Satisfacción del Cliente
+              </mat-checkbox>
+            </div>
+            
+            <div class="export-options">
+              <button mat-stroked-button (click)="exportProductivityReport('pdf')" class="export-btn">
+                <mat-icon>picture_as_pdf</mat-icon>
+                PDF
+              </button>
+              <button mat-stroked-button (click)="exportProductivityReport('excel')" class="export-btn">
+                <mat-icon>table_chart</mat-icon>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Historial de Reportes -->
+    <section class="report-history">
+      <div class="section-header">
+        <h2>
+          <mat-icon>history</mat-icon>
+          Historial de Reportes
+        </h2>
+        <button mat-icon-button (click)="refreshHistory()" matTooltip="Actualizar">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <div class="history-table-container">
+        <table mat-table [dataSource]="reportHistory" class="contabilium-table">
+          <!-- Columna Nombre -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nombre del Reporte</th>
+            <td mat-cell *matCellDef="let report">
+              <div class="report-info">
+                <div class="report-name">{{report.name}}</div>
+                <div class="report-type">{{report.type}}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Fecha -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha de Generación</th>
+            <td mat-cell *matCellDef="let report">
+              {{report.generatedAt | date:'dd/MM/yyyy HH:mm'}}
+            </td>
+          </ng-container>
+
+          <!-- Columna Tamaño -->
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef>Tamaño</th>
+            <td mat-cell *matCellDef="let report">
+              {{report.fileSize | fileSize}}
+            </td>
+          </ng-container>
+
+          <!-- Columna Estado -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let report">
+              <mat-chip [color]="getStatusColor(report.status)">
+                {{report.status}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let report">
+              <button mat-icon-button (click)="downloadReport(report)" matTooltip="Descargar">
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteReport(report)" matTooltip="Eliminar" color="warn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="historyColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: historyColumns;"></tr>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

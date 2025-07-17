@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, map } from 'rxjs/operators';
+import { AccountingServiceService } from './accounting-service.service';
+import { UserService } from './user.service';
 
 export interface Notification {
   id: string;
@@ -24,8 +26,12 @@ export class NotificationService {
   public notifications$ = this.notificationsSubject.asObservable();
   
   private activeToasts: Notification[] = [];
+  private accountingService = inject(AccountingServiceService);
+  private userService = inject(UserService);
 
-  constructor() {}
+  constructor() {
+    this.initializeServiceChecks();
+  }
 
   private getNotificationsFromStorage(): Notification[] {
     const notificationsStr = localStorage.getItem(this.NOTIFICATIONS_KEY);
@@ -240,6 +246,87 @@ export class NotificationService {
       `Se realizará mantenimiento del sistema el ${maintenanceDate.toLocaleDateString('es-ES')} a las ${maintenanceDate.toLocaleTimeString('es-ES')}`,
       false
     );
+  }
+
+  // === NUEVOS MÉTODOS PARA VERIFICACIÓN DE SERVICIOS ===
+
+  private initializeServiceChecks(): void {
+    // Verificar servicios vencidos cada 10 minutos
+    setInterval(() => {
+      this.checkOverdueServices();
+    }, 10 * 60 * 1000);
+
+    // Verificar inmediatamente después de un pequeño delay
+    setTimeout(() => {
+      this.checkOverdueServices();
+    }, 5000);
+  }
+
+  private async checkOverdueServices(): Promise<void> {
+    try {
+      const services = await this.accountingService.services$.pipe(map(s => s)).toPromise();
+      const users = await this.userService.getUsers().pipe(map(u => u)).toPromise();
+
+      if (!services || !users) return;
+
+      const currentDate = new Date();
+      
+      // Servicios vencidos
+      const overdueServices = services.filter(service => 
+        service.status === 'pendiente' && 
+        new Date(service.dueDate) < currentDate
+      );
+
+      // Servicios que vencen en los próximos 3 días
+      const soonToExpire = services.filter(service => {
+        const dueDate = new Date(service.dueDate);
+        const diffTime = dueDate.getTime() - currentDate.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return service.status === 'pendiente' && diffDays > 0 && diffDays <= 3;
+      });
+
+      // Notificar servicios vencidos
+      overdueServices.forEach(service => {
+        const user = users.find(u => u.id === service.userId);
+        if (user && !this.hasRecentNotification(service.id, 'vencido')) {
+          this.showError(
+            'Servicio Vencido',
+            `El servicio "${service.title}" para ${user.name} ${user.lastName} está vencido desde el ${new Date(service.dueDate).toLocaleDateString('es-CL')}`
+          );
+        }
+      });
+
+      // Notificar servicios próximos a vencer
+      soonToExpire.forEach(service => {
+        const user = users.find(u => u.id === service.userId);
+        const daysLeft = Math.ceil((new Date(service.dueDate).getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (user && !this.hasRecentNotification(service.id, 'próximo')) {
+          this.showWarning(
+            'Servicio Próximo a Vencer',
+            `El servicio "${service.title}" para ${user.name} ${user.lastName} vence en ${daysLeft} día${daysLeft > 1 ? 's' : ''}`
+          );
+        }
+      });
+
+    } catch (error) {
+      console.error('Error verificando servicios:', error);
+    }
+  }
+
+  private hasRecentNotification(serviceId: string, type: string): boolean {
+    const notifications = this.notificationsSubject.value;
+    const recent = notifications.find(n => 
+      n.message.includes(serviceId) && 
+      n.message.includes(type) &&
+      (new Date().getTime() - new Date(n.timestamp).getTime()) < (24 * 60 * 60 * 1000) // Últimas 24 horas
+    );
+    return !!recent;
+  }
+
+  // Método público para verificar manualmente
+  public checkServicesNow(): void {
+    this.checkOverdueServices();
   }
 
   private generateId(): string {

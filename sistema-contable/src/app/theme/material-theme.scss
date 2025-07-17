@@ -1,0 +1,74 @@
+// Material Theme Configuration simplificado
+// Este archivo configura los colores de Material Angular para que coincidan con nuestro sistema de diseño
+
+@use '@angular/material' as mat;
+
+// Incluir el tema core de Material
+@include mat.core();
+
+// Usar paletas predefinidas que coincidan con nuestros colores
+$custom-primary: mat.define-palette(mat.$blue-palette, 800); // Azul similar a #1E3A8A
+$custom-accent: mat.define-palette(mat.$green-palette, 500);  // Verde similar a #10B981
+$custom-warn: mat.define-palette(mat.$red-palette, 500);      // Rojo similar a #EF4444
+
+// Crear tema claro
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $custom-primary,
+    accent: $custom-accent,
+    warn: $custom-warn,
+  ),
+  typography: mat.define-typography-config(
+    $font-family: 'Inter, sans-serif',
+  ),
+  density: 0,
+));
+
+// Aplicar tema a todos los componentes
+@include mat.all-component-themes($light-theme);
+
+// Personalizar algunos componentes específicos
+.mat-mdc-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+}
+
+.mat-mdc-button-base {
+  border-radius: 6px !important;
+}
+
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    border-radius: 6px !important;
+  }
+}
+
+// Estilos adicionales para personalizar componentes específicos
+.mat-mdc-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+}
+
+.mat-mdc-button-base {
+  border-radius: 6px !important;
+}
+
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    border-radius: 6px !important;
+  }
+}
+
+.mat-mdc-snack-bar-container {
+  border-radius: 8px !important;
+  margin: 8px !important;
+}
+
+// Sobrescribir estilos de densidad para mejor apariencia
+.mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
+  color: var(--color-primary);
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: var(--color-primary);
+}

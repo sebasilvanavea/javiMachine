@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './components/auth/login/login';
 import { Dashboard } from './components/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard';
+import { noAuthGuard } from './guards/no-auth.guard';
 
 export const routes: Routes = [
   { 
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { 
     path: 'login', 
     component: Login,
+    canActivate: [noAuthGuard],
     title: 'Iniciar Sesión - Sistema Contable'
   },
   { 
@@ -61,6 +63,18 @@ export const routes: Routes = [
     loadComponent: () => import('./components/services/service-form/service-form.component').then(m => m.ServiceFormComponent),
     canActivate: [authGuard],
     title: 'Editar Servicio - Sistema Contable'
+  },
+  {
+    path: 'form21',
+    loadComponent: () => import('./components/form21/form21.component').then(m => m.Form21Component),
+    canActivate: [authGuard],
+    title: 'Formulario 21 - Sistema Contable'
+  },
+  {
+    path: 'reports',
+    loadComponent: () => import('./components/reports/advanced-reports.component').then(m => m.AdvancedReportsComponent),
+    canActivate: [authGuard],
+    title: 'Reportes Avanzados - Sistema Contable'
   },
   {
     path: '**',

@@ -9,7 +9,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { UserService } from '../../services/user.service';
@@ -17,12 +20,16 @@ import { DashboardService } from '../../services/dashboard.service';
 import { OptimizedClickService } from '../../services/optimized-click.service';
 import { AccountingServiceService } from '../../services/accounting-service.service';
 import { DashboardStats, User, Service, ServiceStatus } from '../../models/user.model';
-import { FirebaseDiagnosticComponent } from '../firebase-diagnostic/firebase-diagnostic.component';
+// Componentes comentados temporalmente hasta que se usen en el template
+// import { ChartsDashboardComponent } from '../charts/charts-dashboard.component';
+// import { AdvancedStatsComponent } from '../stats/advanced-stats.component';
+// import { RealTimeMetricsComponent } from '../metrics/real-time-metrics.component';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
     CommonModule,
+    RouterModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,
@@ -32,10 +39,15 @@ import { FirebaseDiagnosticComponent } from '../firebase-diagnostic/firebase-dia
     MatTableModule,
     MatBadgeModule,
     MatTooltipModule,
-    FirebaseDiagnosticComponent
+    MatButtonToggleModule,
+    MatMenuModule,
+    MatDividerModule
+    // ChartsDashboardComponent,
+    // AdvancedStatsComponent,
+    // RealTimeMetricsComponent
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  styleUrl: './dashboard-contabilium.scss'
 })
 export class Dashboard implements OnInit {
   private userService = inject(UserService);
@@ -49,6 +61,14 @@ export class Dashboard implements OnInit {
   isLoadingStats$!: Observable<boolean>;
   isLoadingServices$!: Observable<boolean>;
 
+  // Propiedades para el nuevo diseño
+  systemStatus = {
+    database: true,
+    services: true,
+    api: true
+  };
+
+  hasMoreServices = false;
   displayedColumns: string[] = ['user', 'service', 'amount', 'dueDate', 'status', 'actions'];
 
   ngOnInit(): void {
@@ -164,6 +184,128 @@ export class Dashboard implements OnInit {
     // Limpiar cache y recargar
     this.dashboardService.clearStatsCache();
     this.loadDashboardData();
+  }
+
+  // Nuevos métodos para el diseño mejorado
+  getLastUpdateTime(): string {
+    return new Date().toLocaleTimeString('es-CL', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  }
+
+  exportReport(): void {
+    // Implementar exportación de reportes en formato PDF o Excel
+    const stats$ = this.stats$;
+    if (stats$) {
+      stats$.subscribe(stats => {
+        console.log('Exportando reporte con datos:', stats);
+        // Aquí se implementaría la lógica real de exportación
+        // Por ejemplo, generar PDF con jsPDF o Excel con ExcelJS
+      });
+    }
+  }
+
+  changePeriod(event: any): void {
+    const period = event.value;
+    console.log('Cambiando período a:', period);
+    // Recargar datos según el período seleccionado
+  }
+
+  getUserProgressPercentage(stats: DashboardStats): number {
+    // Calcular porcentaje de progreso basado en meta de usuarios
+    const target = 100; // Meta ejemplo
+    return Math.min((stats.totalUsers / target) * 100, 100);
+  }
+
+  getRevenueProgress(stats: DashboardStats): number {
+    // Calcular progreso de ingresos vs meta
+    const target = stats.monthlyRevenue * 1.2; // Meta 20% más alta
+    return Math.min((stats.monthlyRevenue / target) * 100, 100);
+  }
+
+  viewPendingServices(): void {
+    this.router.navigate(['/services/pending']);
+  }
+
+  filterPendingServices(): void {
+    console.log('Aplicando filtros...');
+    // Implementar lógica de filtros
+  }
+
+  viewReports(): void {
+    this.router.navigate(['/reports']);
+  }
+
+  getOverdueCount(services: {user: User, service: Service}[]): number {
+    return services.filter(item => this.isOverdue(item.service)).length;
+  }
+
+  getDueSoonCount(services: {user: User, service: Service}[]): number {
+    return services.filter(item => this.isDueSoon(item.service)).length;
+  }
+
+  getNormalCount(services: {user: User, service: Service}[]): number {
+    return services.filter(item => 
+      !this.isOverdue(item.service) && !this.isDueSoon(item.service)
+    ).length;
+  }
+
+  isDueSoon(service: Service): boolean {
+    const daysUntilDue = this.getDaysUntilDue(service.dueDate);
+    return daysUntilDue <= 3 && daysUntilDue > 0;
+  }
+
+  getUserColor(user: User): string {
+    // Generar color basado en el nombre del usuario
+    const colors = ['#E3F2FD', '#F3E5F5', '#E8F5E8', '#FFF3E0', '#FCE4EC'];
+    const index = user.name.charCodeAt(0) % colors.length;
+    return colors[index];
+  }
+
+  getStatusClass(service: Service): string {
+    if (this.isOverdue(service)) return 'overdue';
+    if (this.isDueSoon(service)) return 'due-soon';
+    return 'normal';
+  }
+
+  getStatusIcon(service: Service): string {
+    switch (service.status) {
+      case ServiceStatus.PENDING:
+        return this.isOverdue(service) ? 'warning' : 'schedule';
+      case ServiceStatus.IN_PROGRESS:
+        return 'sync';
+      case ServiceStatus.COMPLETED:
+        return 'check_circle';
+      case ServiceStatus.OVERDUE:
+        return 'error';
+      case ServiceStatus.CANCELLED:
+        return 'cancel';
+      default:
+        return 'help';
+    }
+  }
+
+  markAsCompleted(serviceId: string): void {
+    console.log('Marcando servicio como completado:', serviceId);
+    // Implementar lógica para marcar como completado
+  }
+
+  loadMoreServices(): void {
+    console.log('Cargando más servicios...');
+    // Implementar paginación
+  }
+
+  createNewService(): void {
+    this.router.navigate(['/services/new']);
+  }
+
+  generateReport(): void {
+    this.router.navigate(['/reports/generate']);
+  }
+
+  openSettings(): void {
+    this.router.navigate(['/settings']);
   }
 
   // Método para generar datos de prueba

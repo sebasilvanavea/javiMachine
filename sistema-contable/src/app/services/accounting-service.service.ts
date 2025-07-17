@@ -58,26 +58,45 @@ export class AccountingServiceService {
   public stats$ = this.statsSubject.asObservable();
 
   constructor() {
+    // Defer initialization to avoid injection context issues
+    setTimeout(() => this.initializeService(), 100);
+  }
+
+  private initializeService(): void {
     this.loadServices();
   }
 
   private loadServices(): void {
     console.log('🔄 Cargando servicios desde Firestore...');
     
-    const servicesQuery = query(this.servicesCollection, orderBy('createdAt', 'desc'));
-    collectionData(servicesQuery, { idField: 'id' }).subscribe({
-      next: (services) => {
-        const processedServices = services.map(service => this.processService(service));
-        console.log('✅ Servicios cargados desde Firestore:', processedServices.length);
-        this.servicesSubject.next(processedServices as AccountingService[]);
-        this.calculateStats(processedServices as AccountingService[]);
-      },
-      error: (error) => {
-        console.error('❌ Error cargando servicios desde Firestore:', error);
-        this.firebaseErrorService.handleFirestoreError(error);
+    try {
+      const servicesQuery = query(this.servicesCollection, orderBy('createdAt', 'desc'));
+      collectionData(servicesQuery, { idField: 'id' }).subscribe({
+        next: (services) => {
+          const processedServices = services.map(service => this.processService(service));
+          console.log('✅ Servicios cargados desde Firestore:', processedServices.length);
+          // Usar Promise.resolve() para evitar NG0100
+          Promise.resolve().then(() => {
+            this.servicesSubject.next(processedServices as AccountingService[]);
+            this.calculateStats(processedServices as AccountingService[]);
+          });
+        },
+        error: (error) => {
+          console.error('❌ Error cargando servicios desde Firestore:', error);
+          this.firebaseErrorService.handleFirestoreError(error);
+          // Usar Promise.resolve() para evitar NG0100
+          Promise.resolve().then(() => {
+            this.servicesSubject.next([]);
+          });
+        }
+      });
+    } catch (error) {
+      console.error('❌ Error crítico inicializando servicios:', error);
+      // Usar Promise.resolve() para evitar NG0100
+      Promise.resolve().then(() => {
         this.servicesSubject.next([]);
-      }
-    });
+      });
+    }
   }
 
   private processService(service: any): AccountingService {
@@ -183,7 +202,10 @@ export class AccountingServiceService {
         const updatedServices = currentServices.map(service => 
           service.id === id ? { ...service, ...updateData } : service
         );
-        this.servicesSubject.next(updatedServices);
+        // Usar Promise.resolve() para evitar NG0100
+        Promise.resolve().then(() => {
+          this.servicesSubject.next(updatedServices);
+        });
         return updatedServices.find(s => s.id === id)!;
       }),
       catchError(error => {
@@ -201,7 +223,10 @@ export class AccountingServiceService {
         console.log('✅ Servicio eliminado exitosamente:', id);
         const currentServices = this.servicesSubject.value;
         const filteredServices = currentServices.filter(service => service.id !== id);
-        this.servicesSubject.next(filteredServices);
+        // Usar Promise.resolve() para evitar NG0100
+        Promise.resolve().then(() => {
+          this.servicesSubject.next(filteredServices);
+        });
       }),
       catchError(error => {
         console.error('❌ Error eliminando servicio:', error);

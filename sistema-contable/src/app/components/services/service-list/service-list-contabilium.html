@@ -1,0 +1,530 @@
+<div class="contabilium-service-list">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-icon">
+          <mat-icon>business_center</mat-icon>
+        </div>
+        <div class="hero-title">
+          <h1>Servicios Contables</h1>
+          <p>Gestión integral de servicios contables y fiscales</p>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button mat-flat-button color="primary" (click)="createService()" class="primary-btn">
+          <mat-icon>add</mat-icon>
+          Nuevo Servicio
+        </button>
+        <button mat-stroked-button (click)="exportServices()" class="export-btn">
+          <mat-icon>download</mat-icon>
+          Exportar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="stats-section" *ngIf="stats$ | async as stats">
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-icon">
+          <mat-icon>assignment</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{stats.total}}</span>
+          <span class="stat-label">Total Servicios</span>
+        </div>
+      </div>
+      
+      <div class="stat-card pending">
+        <div class="stat-icon">
+          <mat-icon>pending_actions</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{stats.pending}}</span>
+          <span class="stat-label">Pendientes</span>
+        </div>
+      </div>
+      
+      <div class="stat-card in-progress">
+        <div class="stat-icon">
+          <mat-icon>work</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{stats.inProgress}}</span>
+          <span class="stat-label">En Proceso</span>
+        </div>
+      </div>
+      
+      <div class="stat-card completed">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{stats.completed}}</span>
+          <span class="stat-label">Completados</span>
+        </div>
+      </div>
+      
+      <div class="stat-card overdue">
+        <div class="stat-icon">
+          <mat-icon>error</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{stats.overdue}}</span>
+          <span class="stat-label">Vencidos</span>
+        </div>
+      </div>
+
+      <div class="stat-card revenue">
+        <div class="stat-icon">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{stats.monthlyRevenue | currency}}</span>
+          <span class="stat-label">Ingresos del Mes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filter-section">
+    <div class="filter-card">
+      <div class="filter-header">
+        <div class="filter-title">
+          <mat-icon>tune</mat-icon>
+          <span>Filtros y Búsqueda</span>
+        </div>
+        <div class="filter-actions">
+          <button mat-icon-button (click)="toggleFilterExpanded()" matTooltip="{{filterExpanded ? 'Contraer' : 'Expandir'}} filtros">
+            <mat-icon>{{filterExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+          </button>
+          <button mat-icon-button (click)="clearFilters()" matTooltip="Limpiar filtros">
+            <mat-icon>clear_all</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-content" [class.expanded]="filterExpanded">
+        <!-- Quick Search -->
+        <div class="quick-search">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput 
+                   placeholder="Buscar servicios por título, descripción o usuario..."
+                   [(ngModel)]="filters.searchTerm"
+                   (ngModelChange)="applyFilters()">
+            <button matSuffix 
+                    mat-icon-button 
+                    *ngIf="filters.searchTerm"
+                    (click)="clearSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="advanced-filters" *ngIf="filterExpanded">
+          <div class="filter-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select [(ngModel)]="filters.status" 
+                         (selectionChange)="applyFilters()" 
+                         multiple>
+                <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                  <div class="status-option">
+                    <div class="status-indicator" [style.background-color]="status.color"></div>
+                    <span>{{status.label}}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de Servicio</mat-label>
+              <mat-select [(ngModel)]="filters.type" 
+                         (selectionChange)="applyFilters()" 
+                         multiple>
+                <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+                  <div class="type-option">
+                    <mat-icon [style.color]="type.color">{{type.icon}}</mat-icon>
+                    <span>{{type.label}}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Prioridad</mat-label>
+              <mat-select [(ngModel)]="filters.priority" 
+                         (selectionChange)="applyFilters()" 
+                         multiple>
+                <mat-option value="low">
+                  <div class="priority-option low">
+                    <mat-icon>low_priority</mat-icon>
+                    <span>Baja</span>
+                  </div>
+                </mat-option>
+                <mat-option value="medium">
+                  <div class="priority-option medium">
+                    <mat-icon>remove</mat-icon>
+                    <span>Media</span>
+                  </div>
+                </mat-option>
+                <mat-option value="high">
+                  <div class="priority-option high">
+                    <mat-icon>priority_high</mat-icon>
+                    <span>Alta</span>
+                  </div>
+                </mat-option>
+                <mat-option value="urgent">
+                  <div class="priority-option urgent">
+                    <mat-icon>warning</mat-icon>
+                    <span>Urgente</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Usuario Asignado</mat-label>
+              <mat-select [(ngModel)]="filters.userId" 
+                         (selectionChange)="applyFilters()">
+                <mat-option value="">Todos los usuarios</mat-option>
+                <mat-option *ngFor="let user of users$ | async" [value]="user.id">
+                  <div class="user-option">
+                    <div class="user-avatar">
+                      <img *ngIf="user.photoUrl" [src]="user.photoUrl" [alt]="user.name">
+                      <span *ngIf="!user.photoUrl">{{getInitials(user.name, user.lastName)}}</span>
+                    </div>
+                    <span>{{user.name}} {{user.lastName}}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="filter-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha Desde</mat-label>
+              <input matInput 
+                     [matDatepicker]="fromPicker"
+                     [(ngModel)]="filters.dateFrom"
+                     (ngModelChange)="applyFilters()">
+              <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha Hasta</mat-label>
+              <input matInput 
+                     [matDatepicker]="toPicker"
+                     [(ngModel)]="filters.dateTo"
+                     (ngModelChange)="applyFilters()">
+              <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+              <mat-datepicker #toPicker></mat-datepicker>
+            </mat-form-field>
+
+            <div class="quick-filters">
+              <button mat-stroked-button 
+                      [class.active]="filters.isOverdue"
+                      (click)="toggleOverdue()">
+                <mat-icon>error</mat-icon>
+                Vencidos
+              </button>
+              <button mat-stroked-button 
+                      [class.active]="filters.isUrgent"
+                      (click)="toggleUrgent()">
+                <mat-icon>priority_high</mat-icon>
+                Urgentes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Toggle -->
+  <div class="view-controls">
+    <div class="view-toggle">
+      <button mat-icon-button 
+              [class.active]="viewMode === 'grid'"
+              (click)="setViewMode('grid')"
+              matTooltip="Vista de tarjetas">
+        <mat-icon>view_module</mat-icon>
+      </button>
+      <button mat-icon-button 
+              [class.active]="viewMode === 'table'"
+              (click)="setViewMode('table')"
+              matTooltip="Vista de tabla">
+        <mat-icon>view_list</mat-icon>
+      </button>
+    </div>
+    
+    <div class="sort-controls">
+      <mat-form-field appearance="outline" class="sort-field">
+        <mat-label>Ordenar por</mat-label>
+        <mat-select [(ngModel)]="sortBy" (selectionChange)="applySorting()">
+          <mat-option value="createdAt">Fecha de creación</mat-option>
+          <mat-option value="dueDate">Fecha de vencimiento</mat-option>
+          <mat-option value="title">Título</mat-option>
+          <mat-option value="status">Estado</mat-option>
+          <mat-option value="priority">Prioridad</mat-option>
+          <mat-option value="amount">Monto</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <button mat-icon-button 
+              (click)="toggleSortDirection()"
+              [matTooltip]="sortDirection === 'asc' ? 'Orden ascendente' : 'Orden descendente'">
+        <mat-icon>{{sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+      </button>
+    </div>
+
+    <div class="results-info">
+      <span class="results-count">{{(filteredServices$ | async)?.length || 0}} servicios</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="loading">
+    <div class="loading-card">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando servicios...</p>
+    </div>
+  </div>
+
+  <!-- Service Grid View -->
+  <div class="services-grid" *ngIf="viewMode === 'grid' && !loading">
+    <div class="service-card" 
+         *ngFor="let service of filteredServices$ | async; trackBy: trackService"
+         [class.overdue]="isOverdue(service)"
+         [class.urgent]="service.priority === 'urgent'"
+         (click)="viewService(service.id)">
+      
+      <div class="card-header">
+        <div class="service-status">
+          <div class="status-indicator" [style.background-color]="getStatusColor(service.status)"></div>
+          <span class="status-text">{{getStatusLabel(service.status)}}</span>
+        </div>
+        <div class="service-actions">
+          <button mat-icon-button (click)="$event.stopPropagation(); editService(service.id)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button [matMenuTriggerFor]="serviceMenu" (click)="$event.stopPropagation()" matTooltip="Más opciones">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #serviceMenu="matMenu">
+            <button mat-menu-item (click)="duplicateService(service)">
+              <mat-icon>content_copy</mat-icon>
+              <span>Duplicar</span>
+            </button>
+            <button mat-menu-item (click)="archiveService(service.id)">
+              <mat-icon>archive</mat-icon>
+              <span>Archivar</span>
+            </button>
+            <button mat-menu-item (click)="deleteService(service.id)" class="danger">
+              <mat-icon>delete</mat-icon>
+              <span>Eliminar</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div class="service-title">
+          <mat-icon [style.color]="getTypeColor(service.type)">{{getTypeIcon(service.type)}}</mat-icon>
+          <h3>{{service.title}}</h3>
+        </div>
+
+        <p class="service-description">{{service.description}}</p>
+
+        <div class="service-meta">
+          <div class="meta-item">
+            <mat-icon>person</mat-icon>
+            <span>{{getUserName(service.userId)}}</span>
+          </div>
+          <div class="meta-item" *ngIf="service.dueDate">
+            <mat-icon [class.overdue]="isOverdue(service)">schedule</mat-icon>
+            <span [class.overdue]="isOverdue(service)">{{service.dueDate | date:'dd/MM/yyyy'}}</span>
+          </div>
+          <div class="meta-item" *ngIf="service.estimatedAmount">
+            <mat-icon>attach_money</mat-icon>
+            <span>{{service.estimatedAmount | currency}}</span>
+          </div>
+        </div>
+
+        <div class="service-priority" [class]="service.priority">
+          <mat-icon>{{getPriorityIcon(service.priority)}}</mat-icon>
+          <span>{{getPriorityLabel(service.priority)}}</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="progress-section" *ngIf="service.progress !== undefined">
+          <div class="progress-label">
+            <span>Progreso</span>
+            <span class="progress-value">{{service.progress}}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="service.progress"></div>
+          </div>
+        </div>
+        
+        <div class="tags-section" *ngIf="service.tags && service.tags.length > 0">
+          <mat-chip-set>
+            <mat-chip *ngFor="let tag of service.tags | slice:0:3">{{tag}}</mat-chip>
+            <mat-chip *ngIf="service.tags.length > 3" class="more-tags">+{{service.tags.length - 3}}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Table View -->
+  <div class="services-table" *ngIf="viewMode === 'table' && !loading">
+    <div class="table-container">
+      <table mat-table [dataSource]="filteredServices$ | async" class="services-data-table">
+        
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let service">
+            <div class="table-status">
+              <div class="status-indicator" [style.background-color]="getStatusColor(service.status)"></div>
+              <span>{{getStatusLabel(service.status)}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Servicio</th>
+          <td mat-cell *matCellDef="let service" class="service-title-cell">
+            <div class="service-info">
+              <mat-icon [style.color]="getTypeColor(service.type)">{{getTypeIcon(service.type)}}</mat-icon>
+              <div class="service-details">
+                <h4>{{service.title}}</h4>
+                <p>{{service.description | slice:0:60}}{{service.description.length > 60 ? '...' : ''}}</p>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- User Column -->
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef>Usuario</th>
+          <td mat-cell *matCellDef="let service">
+            <div class="user-info">
+              <div class="user-avatar small">
+                <img *ngIf="getUser(service.userId)?.photoUrl" 
+                     [src]="getUser(service.userId)?.photoUrl" 
+                     [alt]="getUserName(service.userId)">
+                <span *ngIf="!getUser(service.userId)?.photoUrl">
+                  {{getInitials(getUser(service.userId)?.name || '', getUser(service.userId)?.lastName || '')}}
+                </span>
+              </div>
+              <span>{{getUserName(service.userId)}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Priority Column -->
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+          <td mat-cell *matCellDef="let service">
+            <div class="table-priority" [class]="service.priority">
+              <mat-icon>{{getPriorityIcon(service.priority)}}</mat-icon>
+              <span>{{getPriorityLabel(service.priority)}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Due Date Column -->
+        <ng-container matColumnDef="dueDate">
+          <th mat-header-cell *matHeaderCellDef>Vencimiento</th>
+          <td mat-cell *matCellDef="let service">
+            <div class="due-date" [class.overdue]="isOverdue(service)" *ngIf="service.dueDate">
+              <mat-icon>schedule</mat-icon>
+              <span>{{service.dueDate | date:'dd/MM/yyyy'}}</span>
+            </div>
+            <span *ngIf="!service.dueDate" class="no-date">Sin fecha</span>
+          </td>
+        </ng-container>
+
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Monto</th>
+          <td mat-cell *matCellDef="let service">
+            <span class="amount" *ngIf="service.estimatedAmount">
+              {{service.estimatedAmount | currency}}
+            </span>
+            <span *ngIf="!service.estimatedAmount" class="no-amount">-</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let service">
+            <div class="table-actions">
+              <button mat-icon-button (click)="viewService(service.id)" matTooltip="Ver detalles">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button (click)="editService(service.id)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button [matMenuTriggerFor]="actionMenu" matTooltip="Más opciones">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item (click)="duplicateService(service)">
+                  <mat-icon>content_copy</mat-icon>
+                  <span>Duplicar</span>
+                </button>
+                <button mat-menu-item (click)="archiveService(service.id)">
+                  <mat-icon>archive</mat-icon>
+                  <span>Archivar</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="deleteService(service.id)" class="danger">
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+            (click)="viewService(row.id)"
+            class="service-row"></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="(filteredServices$ | async)?.length === 0 && !loading">
+    <div class="empty-content">
+      <mat-icon class="empty-icon">assignment_turned_in</mat-icon>
+      <h3>No se encontraron servicios</h3>
+      <p *ngIf="hasActiveFilters()">
+        No hay servicios que coincidan con los filtros aplicados.
+        <br>
+        <button mat-button color="primary" (click)="clearFilters()">Limpiar filtros</button>
+      </p>
+      <p *ngIf="!hasActiveFilters()">
+        Comienza creando tu primer servicio contable.
+        <br>
+        <button mat-flat-button color="primary" (click)="createService()">
+          <mat-icon>add</mat-icon>
+          Crear Primer Servicio
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

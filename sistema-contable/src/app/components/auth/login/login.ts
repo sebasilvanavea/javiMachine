@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { AuthService } from '../../../services/auth.service';
 import { LoginRequest } from '../../../models/auth.model';
@@ -31,15 +33,18 @@ import { LoginRequest } from '../../../models/auth.model';
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
-export class Login {
+export class Login implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
 
   loginForm: FormGroup;
   isLoading = false;
   hidePassword = true;
+  returnUrl = '/dashboard';
+  private destroy$ = new Subject<void>();
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -48,45 +53,65 @@ export class Login {
     });
   }
 
+  ngOnInit(): void {
+    // Obtener la URL de retorno de los query parameters
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    
+    // Verificar si ya hay un usuario autenticado
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (user) {
+          this.router.navigate([this.returnUrl]);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid && !this.isLoading) {
       this.isLoading = true;
       const credentials = this.loginForm.value as LoginRequest;
       
-      this.authService.login(credentials).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          this.snackBar.open('Inicio de sesión exitoso', 'Cerrar', { duration: 3000 });
-          this.router.navigate(['/dashboard']);
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.snackBar.open(error.message || 'Error al iniciar sesión', 'Cerrar', { 
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      });
+      this.authService.login(credentials)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            this.snackBar.open('Inicio de sesión exitoso', 'Cerrar', { duration: 3000 });
+            this.router.navigate([this.returnUrl]);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            this.snackBar.open(error.message || 'Error al iniciar sesión', 'Cerrar', { 
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
     }
   }
 
   onGoogleLogin(): void {
     if (!this.isLoading) {
       this.isLoading = true;
-      this.authService.loginWithGoogle().subscribe({
-        next: (user) => {
-          this.isLoading = false;
-          this.snackBar.open(`Bienvenido ${user.name}`, 'Cerrar', { duration: 3000 });
-          this.router.navigate(['/dashboard']);
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.snackBar.open(error.message || 'Error al iniciar sesión con Google', 'Cerrar', { 
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      });
+      this.authService.loginWithGoogle()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (user) => {
+            this.isLoading = false;
+            // La navegación se maneja automáticamente en el servicio
+            this.router.navigate([this.returnUrl]);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            // Error ya mostrado en el servicio, solo resetear loading
+          }
+        });
     }
   }
 

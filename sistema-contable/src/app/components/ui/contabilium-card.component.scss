@@ -1,0 +1,223 @@
+/* ===== CONTABILIUM CARD COMPONENT ===== */
+
+.contabilium-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+// Tipos de cards con colores Contabilium
+.card-primary {
+  &::before {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  }
+  
+  .card-icon {
+    background: #dbeafe;
+    color: #3b82f6;
+  }
+}
+
+.card-success {
+  &::before {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+  
+  .card-icon {
+    background: #d1fae5;
+    color: #10b981;
+  }
+}
+
+.card-warning {
+  &::before {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+  
+  .card-icon {
+    background: #fef3c7;
+    color: #f59e0b;
+  }
+}
+
+.card-danger {
+  &::before {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+  
+  .card-icon {
+    background: #fef2f2;
+    color: #ef4444;
+  }
+}
+
+// Header del card
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.card-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  
+  &.positive {
+    color: #10b981;
+    background: #d1fae5;
+  }
+  
+  &.negative {
+    color: #ef4444;
+    background: #fef2f2;
+  }
+  
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Contenido del card
+.card-content {
+  margin: 16px 0;
+}
+
+.card-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+// Barra de progreso
+.card-progress {
+  margin-top: 16px;
+  
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+  
+  mat-progress-bar {
+    height: 6px;
+    border-radius: 3px;
+    
+    ::ng-deep .mat-mdc-progress-bar-buffer {
+      background: #e2e8f0;
+    }
+  }
+}
+
+// Acción del card
+.card-action {
+  margin-top: 16px;
+  
+  button {
+    color: #3b82f6;
+    font-weight: 500;
+    padding: 8px 0;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-left: 4px;
+    }
+    
+    &:hover {
+      background: #f8fafc;
+    }
+  }
+}
+
+// Animación de entrada
+.contabilium-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .contabilium-card {
+    padding: 20px;
+  }
+  
+  .card-value {
+    font-size: 2rem;
+  }
+}

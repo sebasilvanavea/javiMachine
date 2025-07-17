@@ -1,0 +1,359 @@
+<div class="contabilium-users">
+  <!-- Header Principal -->
+  <header class="users-hero">
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">
+          <mat-icon>group</mat-icon>
+          Usuarios
+        </div>
+        <h1 class="hero-title">Gestión de Usuarios</h1>
+        <p class="hero-subtitle">Administra y controla todos los usuarios del sistema</p>
+      </div>
+      
+      <div class="hero-right">
+        <button mat-flat-button 
+                color="primary"
+                class="contabilium-btn primary"
+                (click)="addNewUser()">
+          <mat-icon>add</mat-icon>
+          Nuevo Usuario
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="users-content">
+    <!-- Estadísticas Rápidas -->
+    <section class="quick-stats">
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-icon">
+            <mat-icon>group</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{filteredUsers.length}}</div>
+            <div class="stat-label">Total Usuarios</div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-icon">
+            <mat-icon>verified_user</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getActiveUsersCount()}}</div>
+            <div class="stat-label">Usuarios Activos</div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-icon">
+            <mat-icon>work</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getTotalServices()}}</div>
+            <div class="stat-label">Servicios Totales</div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getPendingServicesCount()}}</div>
+            <div class="stat-label">Servicios Pendientes</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Búsqueda y Filtros -->
+    <section class="search-section">
+      <div class="search-card">
+        <div class="search-header">
+          <h3>
+            <mat-icon>search</mat-icon>
+            Buscar y Filtrar
+          </h3>
+        </div>
+        
+        <div class="search-controls">
+          <div class="search-field-container">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Buscar usuarios</mat-label>
+              <mat-icon matPrefix>search</mat-icon>
+              <input matInput 
+                     [formControl]="searchControl"
+                     placeholder="Nombre, email, RUT, empresa...">
+              <button *ngIf="searchControl.value" 
+                      matSuffix 
+                      mat-icon-button 
+                      (click)="searchControl.setValue('')">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="filter-controls">
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select [(ngModel)]="selectedStatus" (selectionChange)="applyFilters()">
+                <mat-option value="">Todos</mat-option>
+                <mat-option value="active">Activos</mat-option>
+                <mat-option value="inactive">Inactivos</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Región</mat-label>
+              <mat-select [(ngModel)]="selectedRegion" (selectionChange)="applyFilters()">
+                <mat-option value="">Todas</mat-option>
+                <mat-option value="RM">Región Metropolitana</mat-option>
+                <mat-option value="V">Valparaíso</mat-option>
+                <mat-option value="VIII">Biobío</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+              <mat-icon>clear_all</mat-icon>
+              Limpiar Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lista de Usuarios -->
+    <section class="users-list">
+      <div class="list-header">
+        <h3>
+          <mat-icon>list</mat-icon>
+          Lista de Usuarios
+        </h3>
+        <div class="list-actions">
+          <mat-button-toggle-group [(ngModel)]="viewMode" class="view-toggle">
+            <mat-button-toggle value="table">
+              <mat-icon>table_rows</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="cards">
+              <mat-icon>view_module</mat-icon>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+
+          <button mat-icon-button [matMenuTriggerFor]="sortMenu" matTooltip="Ordenar">
+            <mat-icon>sort</mat-icon>
+          </button>
+          <mat-menu #sortMenu="matMenu">
+            <button mat-menu-item (click)="sortBy('name')">
+              <mat-icon>sort_by_alpha</mat-icon>
+              Por Nombre
+            </button>
+            <button mat-menu-item (click)="sortBy('createdAt')">
+              <mat-icon>schedule</mat-icon>
+              Por Fecha de Registro
+            </button>
+            <button mat-menu-item (click)="sortBy('services')">
+              <mat-icon>work</mat-icon>
+              Por Cantidad de Servicios
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <!-- Vista de Tabla -->
+      @if (viewMode === 'table') {
+        <div class="table-container">
+          <table mat-table [dataSource]="filteredUsers" class="contabilium-table">
+            <!-- Columna Avatar y Nombre -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>Usuario</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="user-cell">
+                  <div class="user-avatar">
+                    @if (user.photoUrl) {
+                      <img [src]="user.photoUrl" [alt]="user.name">
+                    } @else {
+                      <div class="avatar-placeholder">
+                        {{getInitials(user.name, user.lastName)}}
+                      </div>
+                    }
+                  </div>
+                  <div class="user-info">
+                    <div class="user-name">{{user.name}} {{user.lastName}}</div>
+                    <div class="user-email">{{user.email}}</div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna RUT -->
+            <ng-container matColumnDef="rut">
+              <th mat-header-cell *matHeaderCellDef>RUT</th>
+              <td mat-cell *matCellDef="let user">{{user.rut}}</td>
+            </ng-container>
+
+            <!-- Columna Empresa -->
+            <ng-container matColumnDef="company">
+              <th mat-header-cell *matHeaderCellDef>Empresa</th>
+              <td mat-cell *matCellDef="let user">
+                {{user.company || 'Sin empresa'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Ubicación -->
+            <ng-container matColumnDef="location">
+              <th mat-header-cell *matHeaderCellDef>Ubicación</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="location-info">
+                  <div class="city">{{user.city}}</div>
+                  <div class="region">{{user.region}}</div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Servicios -->
+            <ng-container matColumnDef="services">
+              <th mat-header-cell *matHeaderCellDef>Servicios</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="services-info">
+                  <mat-chip color="primary">{{user.services?.length || 0}}</mat-chip>
+                  @if (getUserPendingServices(user) > 0) {
+                    <mat-chip color="warn">{{getUserPendingServices(user)}} pendientes</mat-chip>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Estado -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="status-indicator" [class.active]="user.isActive">
+                  <mat-icon>{{user.isActive ? 'check_circle' : 'cancel'}}</mat-icon>
+                  <span>{{user.isActive ? 'Activo' : 'Inactivo'}}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Acciones -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let user">
+                <button mat-icon-button [matMenuTriggerFor]="actionMenu" matTooltip="Acciones">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #actionMenu="matMenu">
+                  <button mat-menu-item (click)="viewUserDetail(user)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Ver Detalle</span>
+                  </button>
+                  <button mat-menu-item (click)="editUser(user)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Editar</span>
+                  </button>
+                  <button mat-menu-item (click)="viewUserServices(user)">
+                    <mat-icon>work</mat-icon>
+                    <span>Ver Servicios</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="toggleUserStatus(user)" 
+                          [class.warn]="user.isActive">
+                    <mat-icon>{{user.isActive ? 'block' : 'check_circle'}}</mat-icon>
+                    <span>{{user.isActive ? 'Desactivar' : 'Activar'}}</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: tableColumns;" 
+                (click)="viewUserDetail(row)" 
+                class="user-row"></tr>
+          </table>
+        </div>
+      }
+
+      <!-- Vista de Tarjetas -->
+      @if (viewMode === 'cards') {
+        <div class="cards-container">
+          @for (user of filteredUsers; track user.id) {
+            <div class="user-card" (click)="viewUserDetail(user)">
+              <div class="card-header">
+                <div class="user-avatar-large">
+                  @if (user.photoUrl) {
+                    <img [src]="user.photoUrl" [alt]="user.name">
+                  } @else {
+                    <div class="avatar-placeholder">
+                      {{getInitials(user.name, user.lastName)}}
+                    </div>
+                  }
+                </div>
+                <div class="status-badge" [class.active]="user.isActive">
+                  <mat-icon>{{user.isActive ? 'check_circle' : 'cancel'}}</mat-icon>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <h4 class="user-name">{{user.name}} {{user.lastName}}</h4>
+                <p class="user-email">{{user.email}}</p>
+                <p class="user-company">{{user.company || 'Sin empresa'}}</p>
+                
+                <div class="user-details">
+                  <div class="detail-item">
+                    <mat-icon>badge</mat-icon>
+                    <span>{{user.rut}}</span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>location_on</mat-icon>
+                    <span>{{user.city}}, {{user.region}}</span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>work</mat-icon>
+                    <span>{{user.services?.length || 0}} servicios</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button mat-icon-button (click)="editUser(user); $event.stopPropagation()" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="viewUserServices(user); $event.stopPropagation()" matTooltip="Servicios">
+                  <mat-icon>work</mat-icon>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="cardActionMenu" (click)="$event.stopPropagation()" matTooltip="Más">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #cardActionMenu="matMenu">
+                  <button mat-menu-item (click)="viewUserDetail(user)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Ver Detalle</span>
+                  </button>
+                  <button mat-menu-item (click)="toggleUserStatus(user)">
+                    <mat-icon>{{user.isActive ? 'block' : 'check_circle'}}</mat-icon>
+                    <span>{{user.isActive ? 'Desactivar' : 'Activar'}}</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (filteredUsers.length === 0) {
+        <div class="empty-state">
+          <mat-icon>group_off</mat-icon>
+          <h3>No se encontraron usuarios</h3>
+          <p>No hay usuarios que coincidan con los criterios de búsqueda</p>
+          <button mat-flat-button color="primary" (click)="clearFilters()">
+            Limpiar Filtros
+          </button>
+        </div>
+      }
+    </section>
+  </main>
+</div>

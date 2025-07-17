@@ -1,0 +1,432 @@
+// === VARIABLES ===
+$primary-color: #3B82F6;
+$secondary-color: #1E40AF;
+$success-color: #10B981;
+$warning-color: #F59E0B;
+$error-color: #EF4444;
+$gray-50: #F9FAFB;
+$gray-100: #F3F4F6;
+$gray-200: #E5E7EB;
+$gray-300: #D1D5DB;
+$gray-500: #6B7280;
+$gray-600: #4B5563;
+$gray-700: #374151;
+$gray-900: #111827;
+
+// === MIXINS ===
+@mixin card-shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@mixin hover-effect {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// === ESTILOS PRINCIPALES ===
+
+.export-config-dialog {
+  width: 800px;
+  max-width: 90vw;
+  max-height: 80vh;
+  
+  h2[mat-dialog-title] {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1.5rem 1.5rem 1rem;
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    
+    mat-icon {
+      font-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+  
+  mat-dialog-content {
+    padding: 0;
+    overflow: visible;
+  }
+  
+  .export-form {
+    .config-tabs {
+      .mat-mdc-tab-header {
+        border-bottom: 1px solid $gray-200;
+        background: $gray-50;
+      }
+      
+      .mat-mdc-tab {
+        min-width: 140px;
+        
+        &.mat-mdc-tab-active .mdc-tab__text-label {
+          color: $primary-color;
+          font-weight: 600;
+        }
+      }
+      
+      .mat-mdc-tab-body-content {
+        padding: 1.5rem;
+        min-height: 400px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+    }
+  }
+}
+
+// === CONTENIDO DE TABS ===
+
+.tab-content {
+  .config-section {
+    margin-bottom: 2rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 1rem 0;
+      color: $gray-700;
+      font-weight: 600;
+      font-size: 1.1rem;
+      
+      mat-icon {
+        color: $primary-color;
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+  }
+}
+
+// === OPCIONES DE FORMATO ===
+
+.format-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  
+  .format-option {
+    margin: 0;
+    
+    .mdc-radio {
+      display: none;
+    }
+    
+    .format-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 2px solid $gray-200;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.05);
+      }
+      
+      mat-icon {
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        color: $gray-500;
+      }
+      
+      .format-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        strong {
+          color: $gray-900;
+          font-weight: 600;
+        }
+        
+        span {
+          color: $gray-500;
+          font-size: 0.85rem;
+        }
+      }
+    }
+    
+    &.mat-mdc-radio-checked {
+      .format-card {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.1);
+        
+        mat-icon {
+          color: $primary-color;
+        }
+        
+        .format-info strong {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+// === OPCIONES DE CONTENIDO ===
+
+.content-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  
+  mat-slide-toggle {
+    .mdc-switch {
+      margin-right: 1rem;
+    }
+    
+    .toggle-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      
+      mat-icon {
+        color: $gray-500;
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+      
+      div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        strong {
+          color: $gray-900;
+          font-weight: 500;
+        }
+        
+        small {
+          color: $gray-500;
+          font-size: 0.85rem;
+        }
+      }
+    }
+    
+    &.mat-mdc-slide-toggle-checked {
+      .toggle-content mat-icon {
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+// === CONFIGURACIÓN ESPECÍFICA ===
+
+.pdf-config,
+.excel-config,
+.word-config,
+.csv-config {
+  .config-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  .config-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    
+    mat-slide-toggle {
+      .mdc-switch {
+        margin-right: 1rem;
+      }
+    }
+  }
+}
+
+// === FILTROS DE DATOS ===
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.data-preview {
+  background: $gray-50;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid $gray-200;
+  
+  h4 {
+    margin: 0 0 1rem 0;
+    color: $gray-700;
+    font-weight: 600;
+  }
+  
+  .preview-stats {
+    display: flex;
+    gap: 2rem;
+    
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $primary-color;
+      }
+      
+      .stat-label {
+        font-size: 0.85rem;
+        color: $gray-500;
+      }
+    }
+  }
+}
+
+// === EXPANSIÓN PANELS ===
+
+mat-expansion-panel {
+  @include card-shadow;
+  border-radius: 8px !important;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  mat-expansion-panel-header {
+    background: $gray-50;
+    
+    mat-panel-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: $gray-700;
+      font-weight: 600;
+      
+      mat-icon {
+        color: $primary-color;
+      }
+    }
+  }
+  
+  .mat-expansion-panel-content {
+    padding: 1.5rem;
+  }
+}
+
+// === ACCIONES DEL DIÁLOGO ===
+
+.dialog-actions {
+  padding: 1rem 1.5rem;
+  background: $gray-50;
+  border-top: 1px solid $gray-200;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+    
+    &[mat-raised-button] {
+      @include hover-effect;
+    }
+  }
+}
+
+// === FORM FIELDS ===
+
+mat-form-field {
+  .mat-mdc-form-field-subscript-wrapper {
+    margin-top: 0.25rem;
+  }
+  
+  &.full-width {
+    width: 100%;
+  }
+}
+
+// === RESPONSIVE ===
+
+@media (max-width: 768px) {
+  .export-config-dialog {
+    width: 95vw;
+    max-height: 85vh;
+  }
+  
+  .format-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .config-row {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .preview-stats {
+    flex-direction: column;
+    gap: 1rem !important;
+  }
+}
+
+// === UTILIDADES ===
+
+.full-width {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mt-1 {
+  margin-top: 0.5rem;
+}
+
+.mt-2 {
+  margin-top: 1rem;
+}

@@ -22,7 +22,7 @@
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.4.0",
     "@angular/animations": "^20.1.0",
-    "@angular/cdk": "^20.1.0",
+    "@angular/cdk": "^20.1.2",
     "@angular/common": "^20.0.0",
     "@angular/compiler": "^20.0.0",
     "@angular/core": "^20.0.0",
@@ -33,16 +33,23 @@
     "@angular/router": "^20.0.0",
     "@types/uuid": "^10.0.0",
     "chart.js": "^4.5.0",
+    "docx": "^9.5.1",
+    "file-saver": "^2.0.5",
     "firebase": "^11.10.0",
+    "html-docx-js": "^0.3.1",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "ng2-charts": "^8.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@angular/build": "^20.0.5",
     "@angular/cli": "^20.0.5",
     "@angular/compiler-cli": "^20.0.0",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.7.0",
     "karma": "~6.4.0",

@@ -1,18 +1,106 @@
-/* You can add global styles to this file, and also import other style files */
+/* ===== TEMA GLOBAL CONTABILIUM ===== */
+@use './app/theme/contabilium-theme.scss';
 
+/* ===== SISTEMA CONTABLE - DISEÑO UI/UX PROFESIONAL ===== */
+
+// Importar fuentes profesionales modernas
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+// ===== PALETA DE COLORES PROFESIONAL ESPECIFICADA =====
+:root {
+  // Colores primarios (Sistema especificado)
+  --primary-main: #1E3A8A;           /* Azul Profesional - Botones principales, enlaces */
+  --primary-light: #3B82F6;          /* Azul Claro - Hovers, botones secundarios */
+  --primary-dark: #1E40AF;           /* Azul Oscuro - Variante */
+  
+  // Colores de estado (Sistema especificado)
+  --success-main: #10B981;           /* Verde - Confirmaciones, estado entregado */
+  --warning-main: #FBBF24;           /* Amarillo - Servicios por vencer */
+  --error-main: #EF4444;             /* Rojo - Servicios vencidos o errores */
+  --info-main: #06B6D4;              /* Azul información */
+  
+  // Colores de fondo (Sistema especificado)
+  --background-main: #F9FAFB;        /* Fondo Claro - Formularios, paneles */
+  --surface-main: #FFFFFF;           /* Superficie blanca */
+  --card-main: #FFFFFF;              /* Cards y contenedores */
+  
+  // Colores de texto (Sistema especificado)
+  --text-primary: #1F2937;           /* Texto Principal */
+  --text-secondary: #6B7280;         /* Texto Secundario */
+  --text-muted: #9CA3AF;             /* Texto desactivado */
+  --text-white: #FFFFFF;             /* Texto blanco */
+  
+  // Colores de borde y sombras
+  --border-main: #E5E7EB;            /* Bordes suaves */
+  --border-focus: #3B82F6;           /* Bordes en foco */
+  --border-light: #F3F4F6;          /* Bordes muy suaves */
+  
+  // Sombras modernas (Sistema especificado)
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-professional: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+}
+
+// ===== CONFIGURACIÓN GLOBAL MODERNA =====
 html, body { 
   height: 100%; 
   margin: 0; 
   padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: #fafafa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background-main);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
 }
 
-// Clases utilitarias
+// ===== TIPOGRAFÍAS ESPECIFICADAS =====
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--background-main);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+// Tipografía para datos financieros (Sistema especificado)
+.financial-data, .mono, .monospace {
+  font-family: 'Roboto Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+// ===== CLASES UTILITARIAS ACTUALIZADAS =====
+.text-primary { color: var(--primary-main) !important; }
+.text-primary-light { color: var(--primary-light) !important; }
+.text-success { color: var(--success-main) !important; }
+.text-warning { color: var(--warning-main) !important; }
+.text-error { color: var(--error-main) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+
+.bg-primary { background-color: var(--primary-main) !important; }
+.bg-primary-light { background-color: var(--primary-light) !important; }
+.bg-success { background-color: var(--success-main) !important; }
+.bg-warning { background-color: var(--warning-main) !important; }
+.bg-error { background-color: var(--error-main) !important; }
+.bg-surface { background-color: var(--surface-main) !important; }
+.bg-background { background-color: var(--background-main) !important; }
+
+// ===== CLASES UTILITARIAS MODERNAS =====
 .full-width {
   width: 100% !important;
 }
@@ -89,23 +177,81 @@ html, body {
   margin-top: 24px !important;
 }
 
-// Scrollbar personalizada
+// ===== ESTILOS UI MODERNO ESPECIFICADOS =====
+
+// Botones redondeados con sombra suave
+.btn-modern {
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s ease !important;
+  font-weight: 500 !important;
+  
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-md) !important;
+  }
+}
+
+// Cards con box-shadow sutil y padding generoso
+.card-modern {
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-professional) !important;
+  padding: 24px !important;
+  background: var(--surface-main) !important;
+  border: 1px solid var(--border-light) !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--shadow-xl) !important;
+  }
+}
+
+// Navegación moderna con íconos
+.nav-modern {
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &:hover {
+      background: rgba(59, 130, 246, 0.08);
+      color: var(--primary-main);
+    }
+    
+    &.active {
+      background: var(--primary-main);
+      color: white;
+    }
+  }
+}
+
+// Scrollbar personalizada moderna
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background-main);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--text-muted);
   border-radius: 4px;
   
   &:hover {
-    background: #a1a1a1;
+    background: var(--text-secondary);
   }
 }
 
@@ -136,4 +282,602 @@ html, body {
   .hide-desktop {
     display: none !important;
   }
+}
+
+// ===== ANGULAR MATERIAL THEME MODERNO =====
+
+// Material Angular cards modernos con diseño especificado
+.mat-mdc-card {
+  background-color: var(--surface-main) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-professional) !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-xl) !important;
+  }
+}
+
+// Botones modernos redondeados con sombra suave (especificado)
+.mat-mdc-raised-button {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  font-family: 'Inter', sans-serif !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-md) !important;
+  }
+  
+  &.mat-primary {
+    background-color: var(--primary-main) !important;
+    color: var(--text-white) !important;
+    
+    &:hover {
+      background-color: var(--primary-light) !important;
+    }
+  }
+  
+  &.mat-accent {
+    background-color: var(--success-main) !important;
+    color: var(--text-white) !important;
+  }
+  
+  &.mat-warn {
+    background-color: var(--error-main) !important;
+    color: var(--text-white) !important;
+  }
+}
+
+// Material Angular form fields modernos
+.mat-mdc-form-field {
+  font-family: 'Inter', sans-serif !important;
+  
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    color: var(--text-secondary) !important;
+  }
+  
+  &.mat-focused .mat-mdc-floating-label {
+    color: var(--primary-main) !important;
+  }
+  
+  .mat-mdc-form-field-outline {
+    color: var(--border-main) !important;
+  }
+  
+  &.mat-focused .mat-mdc-form-field-outline-thick {
+    color: var(--primary-main) !important;
+  }
+}
+
+// Material Angular snackbar moderno
+.mat-mdc-snack-bar-container {
+  background-color: var(--surface-main) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-main) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+// Material Angular toolbar moderno
+.mat-toolbar {
+  background: linear-gradient(135deg, var(--primary-main) 0%, var(--primary-light) 100%) !important;
+  color: var(--text-white) !important;
+  box-shadow: var(--shadow-md) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+// Material Angular tabs modernos
+.mat-mdc-tab-group {
+  font-family: 'Inter', sans-serif !important;
+  
+  .mat-mdc-tab-header {
+    border-bottom: 1px solid var(--border-main) !important;
+  }
+}
+
+.mat-mdc-tab .mdc-tab__text-label {
+  color: var(--color-text-primary) !important;
+}
+
+.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--color-primary) !important;
+}
+
+// ===== ESTILOS ESPECÍFICOS DE COMPONENTES =====
+// Dashboard cards
+.dashboard-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-metric {
+  text-align: center;
+  padding: 16px;
+}
+
+.dashboard-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.dashboard-metric-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Header component
+.app-header {
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.app-header .mat-toolbar-row {
+  padding: 0 24px;
+}
+
+.app-header .user-menu {
+  color: white;
+}
+
+// Form styles
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+// Status indicators
+.status-active {
+  background-color: var(--color-success);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-inactive {
+  background-color: var(--color-text-muted);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-warning {
+  background-color: var(--color-warning);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-error {
+  background-color: var(--color-error);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+// Table styles
+.data-table {
+  width: 100%;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table th {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.data-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.data-table tr:hover {
+  background-color: var(--color-background);
+}
+
+// Chart containers
+.chart-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+}
+
+// Loading states
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+.loading-text {
+  margin-left: 16px;
+  color: var(--color-text-muted);
+}
+
+// Notification styles
+.notification-success {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.notification-warning {
+  background-color: var(--color-warning);
+  color: white;
+}
+
+.notification-error {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.notification-info {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+// ===== SOBRESCRIBIR MATERIAL ANGULAR =====
+// Personalizar Material Angular para usar nuestros colores profesionales
+
+// Primary button override
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: var(--color-primary) !important;
+  --mdc-protected-button-label-text-color: white !important;
+}
+
+// Cards override
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+}
+
+// Toolbar override
+.mat-toolbar.mat-primary {
+  --mat-toolbar-container-background-color: var(--color-primary) !important;
+  --mat-toolbar-container-text-color: white !important;
+}
+
+// Form field override
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  --mat-form-field-focus-label-text-color: var(--color-primary) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper:not(.mdc-text-field--invalid) .mat-mdc-form-field-focus-overlay {
+  --mat-form-field-focus-overlay-color: var(--color-primary) !important;
+}
+
+// Progress bar override
+.mat-mdc-progress-bar .mdc-linear-progress__bar-inner {
+  --mdc-linear-progress-active-indicator-color: var(--color-primary) !important;
+}
+
+// Snackbar override
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--color-surface) !important;
+  --mdc-snackbar-supporting-text-color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+}
+
+// Badge override
+.mat-badge-content {
+  background-color: var(--color-error) !important;
+  color: white !important;
+}
+
+// Menu override moderno
+.mat-mdc-menu-panel {
+  --mat-menu-container-color: var(--surface-main) !important;
+  border: 1px solid var(--border-main) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+
+// ===== RESPONSIVIDAD COMPLETA =====
+/* Breakpoints del sistema */
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1536px;
+
+// Utilidades responsivas
+.responsive-grid {
+  display: grid;
+  gap: 24px;
+  
+  @media (min-width: $breakpoint-xs) {
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: $breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (min-width: $breakpoint-lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Contenedores responsivos
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  
+  @media (min-width: $breakpoint-sm) {
+    padding: 24px;
+  }
+  
+  @media (min-width: $breakpoint-lg) {
+    padding: 32px;
+  }
+}
+
+// Textos responsivos
+.text-responsive-xl {
+  font-size: 1.5rem;
+  
+  @media (min-width: $breakpoint-sm) {
+    font-size: 2rem;
+  }
+  
+  @media (min-width: $breakpoint-lg) {
+    font-size: 2.5rem;
+  }
+}
+
+.text-responsive-lg {
+  font-size: 1.25rem;
+  
+  @media (min-width: $breakpoint-sm) {
+    font-size: 1.5rem;
+  }
+  
+  @media (min-width: $breakpoint-lg) {
+    font-size: 1.75rem;
+  }
+}
+
+// Botones responsivos
+.btn-responsive {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  
+  @media (min-width: $breakpoint-sm) {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+}
+
+// Cards responsivos
+.card-responsive {
+  padding: 16px;
+  
+  @media (min-width: $breakpoint-sm) {
+    padding: 24px;
+  }
+  
+  @media (min-width: $breakpoint-lg) {
+    padding: 32px;
+  }
+}
+
+// Ocultar/mostrar elementos por tamaño de pantalla
+.hidden-xs {
+  @media (max-width: $breakpoint-xs) {
+    display: none !important;
+  }
+}
+
+.hidden-sm {
+  @media (max-width: $breakpoint-sm) {
+    display: none !important;
+  }
+}
+
+.visible-sm-up {
+  @media (max-width: $breakpoint-sm) {
+    display: none !important;
+  }
+}
+
+.visible-md-up {
+  @media (max-width: $breakpoint-md) {
+    display: none !important;
+  }
+}
+
+// ===== NAVEGACIÓN RECOMENDADA =====
+/* Barra lateral con íconos */
+.sidebar-navigation {
+  width: 280px;
+  background: var(--surface-main);
+  border-right: 1px solid var(--border-main);
+  box-shadow: var(--shadow-sm);
+  
+  @media (max-width: $breakpoint-md) {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    
+    &.open {
+      transform: translateX(0);
+    }
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: all 0.3s ease;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &:hover {
+      background: rgba(59, 130, 246, 0.08);
+      color: var(--primary-main);
+    }
+    
+    &.active {
+      background: var(--primary-main);
+      color: var(--text-white);
+    }
+  }
+}
+
+/* Header con avatar y logout */
+.header-navigation {
+  height: 64px;
+  background: var(--surface-main);
+  border-bottom: 1px solid var(--border-main);
+  box-shadow: var(--shadow-sm);
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 24px;
+    
+    @media (max-width: $breakpoint-sm) {
+      padding: 0 16px;
+    }
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-main);
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    
+    .user-details {
+      @media (max-width: $breakpoint-sm) {
+        display: none;
+      }
+    }
+  }
+}
+
+/* Breadcrumbs para navegación jerárquica */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    &:not(:last-child)::after {
+      content: '›';
+      margin-left: 8px;
+      color: var(--text-muted);
+    }
+    
+    a {
+      color: var(--primary-main);
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Icon override for primary color
+.mat-icon.mat-primary {
+  color: var(--color-primary) !important;
 }

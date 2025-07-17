@@ -1,0 +1,230 @@
+<div class="reports-container p-24">
+  <!-- Header -->
+  <div class="reports-header mb-24">
+    <h1 class="flex items-center gap-8 text-primary m-0">
+      <mat-icon>assessment</mat-icon> 
+      Reportes y Exportaciones
+    </h1>
+    <p class="text-muted m-0 mt-8">Genera y descarga reportes detallados de tu sistema contable</p>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="quick-stats mb-24" *ngIf="quickStats$ | async as stats">
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title class="text-primary">Resumen General</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-grid">
+          <div class="dashboard-metric">
+            <mat-icon class="text-primary">assignment</mat-icon>
+            <div class="dashboard-metric-value text-primary">{{ stats.totalServices }}</div>
+            <div class="dashboard-metric-label">Total Servicios</div>
+          </div>
+          <div class="dashboard-metric">
+            <mat-icon class="text-primary">people</mat-icon>
+            <div class="dashboard-metric-value text-primary">{{ stats.totalUsers }}</div>
+            <div class="dashboard-metric-label">Total Usuarios</div>
+          </div>
+          <div class="dashboard-metric">
+            <mat-icon class="text-success">monetization_on</mat-icon>
+            <div class="dashboard-metric-value text-success">${{ stats.totalRevenue | number:'1.0-0':'es' }}</div>
+            <div class="dashboard-metric-label">Ingresos Totales</div>
+          </div>
+          <div class="dashboard-metric">
+            <mat-icon class="text-warning">pending_actions</mat-icon>
+            <div class="dashboard-metric-value text-warning">{{ stats.pendingServices }}</div>
+            <div class="dashboard-metric-label">Pendientes</div>
+          </div>
+          <div class="dashboard-metric">
+            <mat-icon class="text-success">check_circle</mat-icon>
+            <div class="dashboard-metric-value text-success">{{ stats.completedServices }}</div>
+            <div class="dashboard-metric-label">Completados</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="reports-grid">
+  <!-- Main Content Grid -->
+  <div class="reports-grid">
+    <!-- Exportaciones Rápidas -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title class="flex items-center gap-8 text-primary">
+          <mat-icon>file_download</mat-icon>
+          Exportaciones Rápidas
+        </mat-card-title>
+        <mat-card-subtitle class="text-muted">Descarga datos inmediatamente</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="export-buttons flex flex-column gap-16">
+          <button mat-raised-button color="primary" 
+                  (click)="exportAllServices()"
+                  [disabled]="isExporting"
+                  class="full-width">
+            <mat-icon>assignment</mat-icon>
+            Exportar Todos los Servicios (CSV)
+          </button>
+          
+          <button mat-raised-button color="accent" 
+                  (click)="exportAllUsers()"
+                  [disabled]="isExporting"
+                  class="full-width">
+            <mat-icon>people</mat-icon>
+            Exportar Todos los Usuarios (CSV)
+          </button>
+        </div>
+        
+        <div *ngIf="isExporting" class="loading-spinner">
+          <mat-spinner diameter="30"></mat-spinner>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Reportes Avanzados -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title class="flex items-center gap-8 text-primary">
+          <mat-icon>analytics</mat-icon>
+          Reportes Detallados
+        </mat-card-title>
+        <mat-card-subtitle class="text-muted">Análisis y estadísticas avanzadas</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Filtros de fecha -->
+        <div class="date-filters flex gap-16 mb-16">
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Fecha desde</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="filter.startDate" name="startDate">
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Fecha hasta</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="filter.endDate" name="endDate">
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <mat-divider class="mb-16"></mat-divider>
+
+        <!-- Botones de reportes -->
+        <div class="report-buttons flex gap-16">
+          <button mat-raised-button color="primary" 
+                  (click)="generateFinancialReport()"
+                  [disabled]="isGeneratingReport"
+                  class="flex-1">
+            <mat-icon>account_balance</mat-icon>
+            Reporte Financiero
+          </button>
+          
+          <button mat-raised-button color="accent" 
+                  (click)="generateServiceReport()"
+                  [disabled]="isGeneratingReport"
+                  class="flex-1">
+            <mat-icon>assignment_turned_in</mat-icon>
+            Reporte de Servicios
+          </button>
+        </div>
+        
+        <div *ngIf="isGeneratingReport" class="loading-spinner">
+          <mat-spinner diameter="30"></mat-spinner>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Filtros Avanzados -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title class="flex items-center gap-8 text-primary">
+          <mat-icon>filter_list</mat-icon>
+          Filtros Avanzados
+        </mat-card-title>
+        <mat-card-subtitle class="text-muted">Personaliza tus reportes</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="filters-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tipo de Servicio</mat-label>
+            <mat-select [(ngModel)]="filter.serviceType" name="serviceType">
+              <mat-option>Todos los tipos</mat-option>
+              <mat-option *ngFor="let type of serviceTypes" [value]="type">
+                {{ getServiceTypeLabel(type) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Estado</mat-label>
+            <mat-select [(ngModel)]="filter.serviceStatus" name="serviceStatus">
+              <mat-option>Todos los estados</mat-option>
+              <mat-option *ngFor="let status of serviceStatuses" [value]="status">
+                {{ getServiceStatusLabel(status) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Usuario</mat-label>
+            <mat-select [(ngModel)]="filter.userId" name="userId">
+              <mat-option>Todos los usuarios</mat-option>
+              <mat-option *ngFor="let user of users$ | async" [value]="user.id">
+                {{ user.name }} {{ user.lastName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-options mt-16">
+          <mat-checkbox [(ngModel)]="filter.includeDetails" name="includeDetails">
+            Incluir detalles completos
+          </mat-checkbox>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Información -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title class="flex items-center gap-8 text-primary">
+          <mat-icon>info</mat-icon>
+          Información de Reportes
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-section mb-16">
+          <h3 class="text-primary mb-8">Formatos Disponibles</h3>
+          <mat-chip-set>
+            <mat-chip class="bg-primary text-white">CSV (Excel)</mat-chip>
+            <mat-chip class="bg-success text-white">TXT (Texto)</mat-chip>
+          </mat-chip-set>
+        </div>
+
+        <div class="info-section mb-16">
+          <h3 class="text-primary mb-8">Tipos de Reportes</h3>
+          <ul class="text-muted">
+            <li><strong class="text-primary">Servicios:</strong> Lista completa con filtros</li>
+            <li><strong class="text-primary">Usuarios:</strong> Base de datos de clientes</li>
+            <li><strong class="text-primary">Financiero:</strong> Ingresos, gastos y análisis</li>
+            <li><strong class="text-primary">Estadísticas:</strong> Métricas y tendencias</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3 class="text-primary mb-8">Filtros Disponibles</h3>
+          <ul class="text-muted">
+            <li>Rango de fechas</li>
+            <li>Tipo de servicio</li>
+            <li>Estado del servicio</li>
+            <li>Usuario específico</li>
+            <li>Nivel de detalle</li>
+          </ul>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

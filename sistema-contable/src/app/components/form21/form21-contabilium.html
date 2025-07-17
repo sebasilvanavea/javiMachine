@@ -1,0 +1,808 @@
+<div class="contabilium-form21">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-icon">
+          <mat-icon>assignment</mat-icon>
+        </div>
+        <div class="hero-title">
+          <h1>Formulario 21</h1>
+          <p>Declaración de Impuesto Anual a la Renta</p>
+        </div>
+      </div>
+      <div class="hero-status" *ngIf="currentStatus">
+        <div class="status-indicator" [class]="currentStatus">
+          <mat-icon>{{getStatusIcon(currentStatus)}}</mat-icon>
+          <span>{{getStatusLabel(currentStatus)}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Overview -->
+  <div class="progress-section" *ngIf="!isLoading">
+    <div class="progress-card">
+      <div class="progress-header">
+        <div class="progress-title">
+          <mat-icon>trending_up</mat-icon>
+          <span>Progreso del Formulario</span>
+        </div>
+        <div class="progress-percentage">
+          <span class="percentage-value">{{calculateProgress()}}%</span>
+          <span class="percentage-label">Completado</span>
+        </div>
+      </div>
+      
+      <div class="progress-bar-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="calculateProgress()"></div>
+        </div>
+      </div>
+
+      <div class="steps-overview">
+        <div class="step-item" 
+             *ngFor="let step of formSteps; let i = index"
+             [class.completed]="step.completed"
+             [class.current]="currentStepIndex === i"
+             [class.available]="step.available">
+          <div class="step-number">
+            <mat-icon *ngIf="step.completed">check</mat-icon>
+            <span *ngIf="!step.completed">{{i + 1}}</span>
+          </div>
+          <div class="step-info">
+            <span class="step-title">{{step.title}}</span>
+            <span class="step-subtitle">{{step.subtitle}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="isLoading">
+    <div class="loading-card">
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      <h3>Procesando Formulario</h3>
+      <p>{{loadingMessage || 'Validando información y calculando impuestos...'}}</p>
+    </div>
+  </div>
+
+  <!-- Form Stepper -->
+  <div class="form-section" *ngIf="!isLoading">
+    <mat-stepper [linear]="true" #stepper class="contabilium-stepper" (selectionChange)="onStepChange($event)">
+      
+      <!-- Paso 1: Datos del Contribuyente -->
+      <mat-step [stepControl]="contribuyenteForm" label="Datos del Contribuyente">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>person</mat-icon>
+            <span>Contribuyente</span>
+          </div>
+        </ng-template>
+        
+        <div class="step-content">
+          <div class="step-header">
+            <h2>Información del Contribuyente</h2>
+            <p>Ingresa los datos personales y de identificación del contribuyente</p>
+          </div>
+
+          <form [formGroup]="contribuyenteForm" class="form21-form">
+            <div class="form-section-title">
+              <mat-icon>badge</mat-icon>
+              <span>Identificación</span>
+            </div>
+            
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>RUT</mat-label>
+                <input matInput 
+                       formControlName="rut" 
+                       placeholder="12.345.678-9"
+                       (blur)="validateRut()">
+                <mat-icon matSuffix>badge</mat-icon>
+                <mat-hint>Ingresa el RUT sin puntos, con guión</mat-hint>
+                <mat-error *ngIf="contribuyenteForm.get('rut')?.hasError('required')">
+                  RUT es requerido
+                </mat-error>
+                <mat-error *ngIf="contribuyenteForm.get('rut')?.hasError('invalidRut')">
+                  RUT inválido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Nombres</mat-label>
+                <input matInput formControlName="nombres" placeholder="Juan Carlos">
+                <mat-error *ngIf="contribuyenteForm.get('nombres')?.hasError('required')">
+                  Nombres son requeridos
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido Paterno</mat-label>
+                <input matInput formControlName="apellidoPaterno" placeholder="González">
+                <mat-error *ngIf="contribuyenteForm.get('apellidoPaterno')?.hasError('required')">
+                  Apellido paterno es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido Materno</mat-label>
+                <input matInput formControlName="apellidoMaterno" placeholder="López">
+              </mat-form-field>
+            </div>
+
+            <div class="form-section-title">
+              <mat-icon>home</mat-icon>
+              <span>Información de Contacto</span>
+            </div>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput 
+                       type="email" 
+                       formControlName="email" 
+                       placeholder="juan.gonzalez@email.com">
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="contribuyenteForm.get('email')?.hasError('required')">
+                  Email es requerido
+                </mat-error>
+                <mat-error *ngIf="contribuyenteForm.get('email')?.hasError('email')">
+                  Email inválido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="telefono" placeholder="+56 9 1234 5678">
+                <mat-icon matSuffix>phone</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Dirección</mat-label>
+                <textarea matInput 
+                          formControlName="direccion" 
+                          placeholder="Av. Providencia 1234, Providencia"
+                          rows="2"></textarea>
+                <mat-icon matSuffix>location_on</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-section-title">
+              <mat-icon>work</mat-icon>
+              <span>Información Laboral</span>
+            </div>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Actividad Económica</mat-label>
+                <mat-select formControlName="actividadEconomica">
+                  <mat-option value="dependiente">Trabajador Dependiente</mat-option>
+                  <mat-option value="independiente">Trabajador Independiente</mat-option>
+                  <mat-option value="empresario">Empresario</mat-option>
+                  <mat-option value="pensionado">Pensionado</mat-option>
+                  <mat-option value="estudiante">Estudiante</mat-option>
+                  <mat-option value="otros">Otros</mat-option>
+                </mat-select>
+                <mat-error *ngIf="contribuyenteForm.get('actividadEconomica')?.hasError('required')">
+                  Actividad económica es requerida
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Estado Civil</mat-label>
+                <mat-select formControlName="estadoCivil">
+                  <mat-option value="soltero">Soltero(a)</mat-option>
+                  <mat-option value="casado">Casado(a)</mat-option>
+                  <mat-option value="viudo">Viudo(a)</mat-option>
+                  <mat-option value="divorciado">Divorciado(a)</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </form>
+
+          <div class="step-actions">
+            <button mat-flat-button color="primary" 
+                    [disabled]="!contribuyenteForm.valid"
+                    (click)="nextStep()">
+              Continuar
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- Paso 2: Ingresos -->
+      <mat-step [stepControl]="ingresosForm" label="Ingresos">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>Ingresos</span>
+          </div>
+        </ng-template>
+
+        <div class="step-content">
+          <div class="step-header">
+            <h2>Declaración de Ingresos</h2>
+            <p>Detalla todos los ingresos percibidos durante el año tributario</p>
+          </div>
+
+          <form [formGroup]="ingresosForm" class="form21-form">
+            <div class="income-cards">
+              <!-- Ingresos por Trabajo Dependiente -->
+              <div class="income-card">
+                <div class="income-header">
+                  <div class="income-icon">
+                    <mat-icon>work</mat-icon>
+                  </div>
+                  <div class="income-title">
+                    <h3>Trabajo Dependiente</h3>
+                    <p>Sueldos, salarios y otras rentas del trabajo</p>
+                  </div>
+                  <div class="income-toggle">
+                    <mat-checkbox formControlName="tieneIngresosDependiente"
+                                  (change)="toggleIncomeSection('dependiente', $event.checked)">
+                      Declara ingresos
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <div class="income-content" *ngIf="ingresosForm.get('tieneIngresosDependiente')?.value">
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Sueldo Base Anual</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="sueldoBase"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Horas Extras</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="horasExtras"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Bonos y Gratificaciones</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="bonos"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Aguinaldo</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="aguinaldo"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="total-section">
+                    <div class="total-label">Total Ingresos Dependiente:</div>
+                    <div class="total-amount">{{calculateTotalDependiente() | currency:'CLP':'symbol':'1.0-0'}}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ingresos por Trabajo Independiente -->
+              <div class="income-card">
+                <div class="income-header">
+                  <div class="income-icon">
+                    <mat-icon>business</mat-icon>
+                  </div>
+                  <div class="income-title">
+                    <h3>Trabajo Independiente</h3>
+                    <p>Honorarios, servicios profesionales y actividades independientes</p>
+                  </div>
+                  <div class="income-toggle">
+                    <mat-checkbox formControlName="tieneIngresosIndependiente"
+                                  (change)="toggleIncomeSection('independiente', $event.checked)">
+                      Declara ingresos
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <div class="income-content" *ngIf="ingresosForm.get('tieneIngresosIndependiente')?.value">
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Honorarios Brutos</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="honorarios"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Retención (10%)</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="retencionHonorarios"
+                             placeholder="0"
+                             readonly>
+                      <span matSuffix>CLP</span>
+                      <mat-hint>Se calcula automáticamente</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Otros Ingresos Independientes</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="otrosIndependiente"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="total-section">
+                    <div class="total-label">Total Ingresos Independiente:</div>
+                    <div class="total-amount">{{calculateTotalIndependiente() | currency:'CLP':'symbol':'1.0-0'}}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Otros Ingresos -->
+              <div class="income-card">
+                <div class="income-header">
+                  <div class="income-icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </div>
+                  <div class="income-title">
+                    <h3>Otros Ingresos</h3>
+                    <p>Pensiones, arriendos, inversiones y otros</p>
+                  </div>
+                  <div class="income-toggle">
+                    <mat-checkbox formControlName="tieneOtrosIngresos"
+                                  (change)="toggleIncomeSection('otros', $event.checked)">
+                      Declara ingresos
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <div class="income-content" *ngIf="ingresosForm.get('tieneOtrosIngresos')?.value">
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Pensiones</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="pensiones"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Arriendos</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="arriendos"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Dividendos</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="dividendos"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Intereses</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="intereses"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="total-section">
+                    <div class="total-label">Total Otros Ingresos:</div>
+                    <div class="total-amount">{{calculateTotalOtros() | currency:'CLP':'symbol':'1.0-0'}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen Total de Ingresos -->
+            <div class="income-summary">
+              <div class="summary-card">
+                <div class="summary-header">
+                  <mat-icon>summarize</mat-icon>
+                  <h3>Resumen Total de Ingresos</h3>
+                </div>
+                
+                <div class="summary-details">
+                  <div class="summary-row">
+                    <span>Ingresos Dependiente:</span>
+                    <span>{{calculateTotalDependiente() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span>Ingresos Independiente:</span>
+                    <span>{{calculateTotalIndependiente() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span>Otros Ingresos:</span>
+                    <span>{{calculateTotalOtros() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="summary-total">
+                    <span>Total Ingresos Brutos:</span>
+                    <span>{{calculateTotalIngresos() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="step-actions">
+            <button mat-stroked-button (click)="previousStep()">
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <button mat-flat-button color="primary" 
+                    [disabled]="!ingresosForm.valid"
+                    (click)="nextStep()">
+              Continuar
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- Paso 3: Deducciones -->
+      <mat-step [stepControl]="deduccionesForm" label="Deducciones">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>receipt</mat-icon>
+            <span>Deducciones</span>
+          </div>
+        </ng-template>
+
+        <div class="step-content">
+          <div class="step-header">
+            <h2>Deducciones Autorizadas</h2>
+            <p>Declara los gastos deducibles que puedes rebajar de tus ingresos</p>
+          </div>
+
+          <form [formGroup]="deduccionesForm" class="form21-form">
+            <div class="deduction-cards">
+              <!-- Deducciones Personales -->
+              <div class="deduction-card">
+                <div class="deduction-header">
+                  <div class="deduction-icon">
+                    <mat-icon>person</mat-icon>
+                  </div>
+                  <div class="deduction-title">
+                    <h3>Deducciones Personales</h3>
+                    <p>Gastos médicos, educacionales y otros personales</p>
+                  </div>
+                </div>
+
+                <div class="deduction-content">
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Gastos Médicos</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="gastosMedicos"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                      <mat-hint>Máximo 5 UTA</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Gastos Educacionales</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="gastosEducacionales"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                      <mat-hint>Máximo 2,5 UTA</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Donaciones</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="donaciones"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                      <mat-hint>Máximo 2% del ingreso</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Intereses Crédito Hipotecario</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="interesesHipotecario"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                      <mat-hint>Máximo 8 UTA</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Deducciones Previsionales -->
+              <div class="deduction-card">
+                <div class="deduction-header">
+                  <div class="deduction-icon">
+                    <mat-icon>savings</mat-icon>
+                  </div>
+                  <div class="deduction-title">
+                    <h3>Cotizaciones Previsionales</h3>
+                    <p>AFP, salud y otros seguros sociales</p>
+                  </div>
+                </div>
+
+                <div class="deduction-content">
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Cotización AFP</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="cotizacionAFP"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Isapre o Fonasa</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="cotizacionSalud"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Seguro de Cesantía</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="seguroCesantia"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>APV (Ahorro Previsional Voluntario)</mat-label>
+                      <input matInput 
+                             type="number" 
+                             formControlName="apv"
+                             placeholder="0">
+                      <span matSuffix>CLP</span>
+                      <mat-hint>Máximo 50 UF mensuales</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen Deducciones -->
+            <div class="deduction-summary">
+              <div class="summary-card">
+                <div class="summary-header">
+                  <mat-icon>receipt_long</mat-icon>
+                  <h3>Resumen de Deducciones</h3>
+                </div>
+                
+                <div class="summary-details">
+                  <div class="summary-row">
+                    <span>Deducciones Personales:</span>
+                    <span>{{calculateTotalDeduccionesPersonales() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span>Cotizaciones Previsionales:</span>
+                    <span>{{calculateTotalCotizaciones() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="summary-total">
+                    <span>Total Deducciones:</span>
+                    <span>{{calculateTotalDeducciones() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="step-actions">
+            <button mat-stroked-button (click)="previousStep()">
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <button mat-flat-button color="primary" 
+                    [disabled]="!deduccionesForm.valid"
+                    (click)="nextStep()">
+              Continuar
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- Paso 4: Resumen y Cálculo -->
+      <mat-step label="Resumen y Cálculo">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>calculate</mat-icon>
+            <span>Resumen</span>
+          </div>
+        </ng-template>
+
+        <div class="step-content">
+          <div class="step-header">
+            <h2>Resumen y Cálculo de Impuesto</h2>
+            <p>Revisa la información y ve el cálculo final de tu impuesto anual</p>
+          </div>
+
+          <!-- Calculation Summary -->
+          <div class="calculation-section">
+            <div class="calc-cards">
+              <!-- Ingresos -->
+              <div class="calc-card ingresos">
+                <div class="calc-header">
+                  <mat-icon>account_balance_wallet</mat-icon>
+                  <h3>Total Ingresos</h3>
+                </div>
+                <div class="calc-amount">
+                  {{calculateTotalIngresos() | currency:'CLP':'symbol':'1.0-0'}}
+                </div>
+                <div class="calc-details">
+                  <div class="detail-item">
+                    <span>Dependiente:</span>
+                    <span>{{calculateTotalDependiente() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span>Independiente:</span>
+                    <span>{{calculateTotalIndependiente() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span>Otros:</span>
+                    <span>{{calculateTotalOtros() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Deducciones -->
+              <div class="calc-card deducciones">
+                <div class="calc-header">
+                  <mat-icon>receipt</mat-icon>
+                  <h3>Total Deducciones</h3>
+                </div>
+                <div class="calc-amount">
+                  {{calculateTotalDeducciones() | currency:'CLP':'symbol':'1.0-0'}}
+                </div>
+                <div class="calc-details">
+                  <div class="detail-item">
+                    <span>Personales:</span>
+                    <span>{{calculateTotalDeduccionesPersonales() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span>Previsionales:</span>
+                    <span>{{calculateTotalCotizaciones() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Base Imponible -->
+              <div class="calc-card base-imponible">
+                <div class="calc-header">
+                  <mat-icon>trending_up</mat-icon>
+                  <h3>Base Imponible</h3>
+                </div>
+                <div class="calc-amount">
+                  {{calculateBaseImponible() | currency:'CLP':'symbol':'1.0-0'}}
+                </div>
+                <div class="calc-formula">
+                  Ingresos - Deducciones
+                </div>
+              </div>
+
+              <!-- Impuesto -->
+              <div class="calc-card impuesto">
+                <div class="calc-header">
+                  <mat-icon>gavel</mat-icon>
+                  <h3>Impuesto Anual</h3>
+                </div>
+                <div class="calc-amount" [class.negative]="calculateImpuestoFinal() < 0">
+                  {{calculateImpuestoFinal() | currency:'CLP':'symbol':'1.0-0'}}
+                </div>
+                <div class="calc-status">
+                  <span *ngIf="calculateImpuestoFinal() > 0" class="to-pay">A pagar</span>
+                  <span *ngIf="calculateImpuestoFinal() < 0" class="to-refund">A favor</span>
+                  <span *ngIf="calculateImpuestoFinal() === 0" class="neutral">Sin diferencia</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tax Breakdown -->
+            <div class="tax-breakdown">
+              <div class="breakdown-card">
+                <h3>
+                  <mat-icon>analytics</mat-icon>
+                  Desglose del Cálculo
+                </h3>
+                
+                <div class="breakdown-table">
+                  <div class="breakdown-row">
+                    <span>Impuesto según escala de tramos</span>
+                    <span>{{calculateImpuestoEscala() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>(-) Crédito por hijo</span>
+                    <span>{{calculateCreditoHijo() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>(-) Retenciones del año</span>
+                    <span>{{calculateRetenciones() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>(-) PPM pagados</span>
+                    <span>{{calculatePPM() | currency:'CLP':'symbol':'1.0-0'}}</span>
+                  </div>
+                  <div class="breakdown-total">
+                    <span>Resultado Final</span>
+                    <span [class.negative]="calculateImpuestoFinal() < 0">
+                      {{calculateImpuestoFinal() | currency:'CLP':'symbol':'1.0-0'}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-stroked-button (click)="previousStep()">
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <button mat-flat-button color="primary" (click)="saveForm()">
+              <mat-icon>save</mat-icon>
+              Guardar Borrador
+            </button>
+            <button mat-flat-button color="accent" (click)="submitForm()">
+              <mat-icon>send</mat-icon>
+              Enviar Declaración
+            </button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="form-actions" *ngIf="!isLoading">
+    <div class="action-buttons">
+      <button mat-stroked-button (click)="saveDraft()" [disabled]="isSubmitting">
+        <mat-icon>save</mat-icon>
+        Guardar Borrador
+      </button>
+      
+      <button mat-stroked-button (click)="previewForm()" [disabled]="!isFormValid()">
+        <mat-icon>visibility</mat-icon>
+        Vista Previa
+      </button>
+      
+      <button mat-flat-button 
+              color="warn" 
+              (click)="clearForm()"
+              [disabled]="isSubmitting">
+        <mat-icon>clear</mat-icon>
+        Limpiar Formulario
+      </button>
+    </div>
+  </div>
+</div>

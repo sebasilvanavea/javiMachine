@@ -1,33 +1,28 @@
 <div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>
-        <div class="login-header">
-          <mat-icon class="login-icon">account_balance</mat-icon>
-          <h1>Sistema Contable</h1>
-        </div>
-      </mat-card-title>
-      <mat-card-subtitle>Ingresa a tu cuenta</mat-card-subtitle>
-    </mat-card-header>
+  <div class="login-card">
+    <div class="login-header">
+      <mat-icon class="login-icon">analytics</mat-icon>
+      <h1>Sistema Contable</h1>
+      <p>Gestiona tu empresa de forma inteligente</p>
+    </div>
     
-    <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <mat-icon matPrefix>email</mat-icon>
-          <input matInput 
-                 type="email" 
-                 formControlName="email" 
-                 placeholder="tu@email.com"
-                 autocomplete="email">
-          <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-            {{getErrorMessage('email')}}
-          </mat-error>
-        </mat-form-field>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email corporativo</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput 
+               type="email" 
+               formControlName="email" 
+               placeholder="tu@empresa.com"
+               autocomplete="email">
+        <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          {{getErrorMessage('email')}}
+        </mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
-          <mat-icon matPrefix>lock</mat-icon>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
           <input matInput 
                  [type]="hidePassword ? 'password' : 'text'" 
                  formControlName="password" 
@@ -47,46 +42,44 @@
         </mat-form-field>
 
         <button mat-raised-button 
-                color="primary" 
                 type="submit" 
                 class="full-width login-button"
                 [disabled]="loginForm.invalid || isLoading">
           <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
           <span *ngIf="!isLoading">Iniciar Sesión</span>
         </button>
-      </form>
 
-      <mat-divider class="divider">
-        <span class="divider-text">O</span>
-      </mat-divider>
-
-      <button mat-raised-button 
-              color="accent" 
-              class="full-width google-button"
-              (click)="onGoogleLogin()"
-              [disabled]="isLoading">
-        <mat-icon class="google-icon">
-          <svg width="18" height="18" viewBox="0 0 18 18">
-            <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
-            <path fill="#34A853" d="M8.98 16c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 16z"/>
-            <path fill="#FBBC05" d="M4.5 9.52a4.8 4.8 0 0 1 0-3.04V4.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/>
-            <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 4.41l2.67 2.07c.66-1.99 2.48-3.3 4.48-3.3z"/>
-          </svg>
-        </mat-icon>
-        <span *ngIf="!isLoading">Continuar con Google</span>
-        <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
-      </button>
-    </mat-card-content>
-
-    <mat-card-actions class="demo-info">
-      <div class="demo-credentials">
-        <mat-icon color="primary">check_circle</mat-icon>
-        <div class="demo-content">
-          <h4>� Firebase Configurado</h4>
-          <p class="demo-note">Autenticación con Google habilitada</p>
-          <p class="demo-note">Base de datos Firestore conectada</p>
+        <div class="divider">
+          <span class="divider-text">O</span>
         </div>
+
+        <button mat-raised-button 
+                type="button"
+                class="full-width google-button"
+            (click)="onGoogleLogin()"
+            [disabled]="isLoading">
+      <div class="google-icon">
+        <svg width="20" height="20" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+          <path fill="#34A853" d="M8.98 16c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 16z"/>
+          <path fill="#FBBC05" d="M4.5 9.52a4.8 4.8 0 0 1 0-3.04V4.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/>
+          <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 4.41l2.67 2.07c.66-1.99 2.48-3.3 4.48-3.3z"/>
+        </svg>
       </div>
-    </mat-card-actions>
-  </mat-card>
+      <span *ngIf="!isLoading">Continuar con Google</span>
+      <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+    </button>
+  </form>
+
+  <div class="demo-info">
+    <div class="demo-credentials">
+      <mat-icon>verified</mat-icon>
+      <div class="demo-content">
+        <h4>✅ Sistema Configurado</h4>
+        <p class="demo-note">Autenticación segura habilitada</p>
+        <p class="demo-note">Base de datos en tiempo real</p>
+        <p class="demo-note">Respaldo automático en la nube</p>
+      </div>
+    </div>
+  </div>
 </div>

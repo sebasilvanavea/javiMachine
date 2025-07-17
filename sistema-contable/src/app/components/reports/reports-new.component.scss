@@ -1,0 +1,64 @@
+// Reportes con sistema de colores profesional
+.reports-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.reports-header {
+  text-align: center;
+}
+
+.quick-stats {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 16px;
+  }
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.info-section {
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  
+  ul {
+    padding-left: 20px;
+    line-height: 1.6;
+    
+    li {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.filter-options {
+  .mat-mdc-checkbox {
+    --mdc-checkbox-selected-checkmark-color: white;
+    --mdc-checkbox-selected-icon-color: var(--color-primary);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .date-filters {
+    flex-direction: column !important;
+  }
+  
+  .report-buttons {
+    flex-direction: column !important;
+  }
+}

@@ -1,0 +1,665 @@
+<!-- Header Principal -->
+<div class="reports-header">
+  <div class="header-content">
+    <div class="title-section">
+      <h1 class="page-title">
+        <mat-icon>assessment</mat-icon>
+        Reportes Avanzados
+      </h1>
+      <p class="page-subtitle">Sistema completo de análisis y exportación de datos</p>
+    </div>
+    
+    <div class="action-buttons">
+      <button mat-icon-button 
+              matTooltip="Actualizar datos"
+              (click)="refreshData()"
+              [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      
+      <!-- Test de Exportación -->
+      <button mat-stroked-button 
+              color="accent"
+              (click)="testSimpleExport()"
+              matTooltip="Probar exportación básica">
+        <mat-icon>bug_report</mat-icon>
+        Test Export
+      </button>
+      
+      <!-- Diagnóstico de Datos -->
+      <button mat-stroked-button 
+              color="warn"
+              (click)="testDataConnection()"
+              matTooltip="Diagnosticar conexión con base de datos">
+        <mat-icon>storage</mat-icon>
+        Test Datos
+      </button>
+      
+      <!-- Crear Datos de Prueba -->
+      <button mat-stroked-button 
+              color="accent"
+              (click)="createSampleData()"
+              matTooltip="Crear datos de prueba si no existen">
+        <mat-icon>add_circle</mat-icon>
+        Crear Datos
+      </button>
+      
+      <!-- Recargar Datos -->
+      <button mat-raised-button 
+              color="primary"
+              (click)="forceReload()"
+              [disabled]="loading"
+              matTooltip="Forzar recarga de datos">
+        <mat-icon>refresh</mat-icon>
+        Recargar
+      </button>
+      
+      <!-- Exportación Avanzada -->
+      <button mat-raised-button 
+              color="primary"
+              (click)="openAdvancedExportDialog()"
+              [disabled]="!hasData || loading"
+              matTooltip="Configurar exportación avanzada">
+        <mat-icon>tune</mat-icon>
+        Exportar Avanzado
+      </button>
+      
+      <!-- Exportación Rápida -->
+      <button mat-raised-button 
+              [matMenuTriggerFor]="quickExportMenu"
+              [disabled]="!hasData || loading"
+              matTooltip="Exportación rápida">
+        <mat-icon>file_download</mat-icon>
+        Exportar Rápido
+      </button>
+      
+      <mat-menu #quickExportMenu="matMenu">
+        <h6 mat-subheader>Exportación Rápida</h6>
+        <button mat-menu-item (click)="quickExport('pdf')">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <span>PDF (Configuración estándar)</span>
+        </button>
+        <button mat-menu-item (click)="quickExport('excel')">
+          <mat-icon>table_chart</mat-icon>
+          <span>Excel (Múltiples hojas)</span>
+        </button>
+        <button mat-menu-item (click)="quickExport('word')">
+          <mat-icon>article</mat-icon>
+          <span>Word (Documento completo)</span>
+        </button>
+        <button mat-menu-item (click)="quickExport('csv')">
+          <mat-icon>grid_on</mat-icon>
+          <span>CSV (Solo datos)</span>
+        </button>
+        
+        <mat-divider></mat-divider>
+        
+        <h6 mat-subheader>Opciones Avanzadas</h6>
+        <button mat-menu-item (click)="openAdvancedExportDialog()">
+          <mat-icon>settings</mat-icon>
+          <span>Configurar exportación...</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>
+
+<!-- Panel de Filtros -->
+<mat-card class="filters-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>filter_alt</mat-icon>
+      Filtros de Búsqueda
+    </mat-card-title>
+    <div class="filter-actions">
+      <span class="filter-count" *ngIf="hasFilters">
+        Filtros activos
+        <mat-icon matBadge="!" matBadgeColor="accent">filter_alt</mat-icon>
+      </span>
+      <button mat-button 
+              color="warn"
+              (click)="clearFilters()"
+              [disabled]="!hasFilters">
+        <mat-icon>clear</mat-icon>
+        Limpiar Filtros
+      </button>
+    </div>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form [formGroup]="filterForm" class="filters-form">
+      <!-- Fila 1: Fechas y Búsqueda -->
+      <div class="filter-row">
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Fecha Desde</mat-label>
+          <input matInput 
+                 [matDatepicker]="fromPicker" 
+                 formControlName="dateFrom"
+                 placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Fecha Hasta</mat-label>
+          <input matInput 
+                 [matDatepicker]="toPicker" 
+                 formControlName="dateTo"
+                 placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Búsqueda General</mat-label>
+          <input matInput 
+                 formControlName="searchQuery"
+                 placeholder="Buscar en título, usuario, descripción...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Fila 2: Selecciones Múltiples -->
+      <div class="filter-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipos de Servicio</mat-label>
+          <mat-select formControlName="serviceTypes" multiple>
+            <mat-option *ngFor="let type of serviceTypes" [value]="type.value">
+              {{type.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estados</mat-label>
+          <mat-select formControlName="serviceStatus" multiple>
+            <mat-option *ngFor="let status of serviceStatuses" [value]="status.value">
+              <mat-icon [style.color]="getStatusColor(status.value)">
+                {{getStatusIcon(status.value)}}
+              </mat-icon>
+              {{status.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prioridades</mat-label>
+          <mat-select formControlName="priority" multiple>
+            <mat-option *ngFor="let priority of priorities" [value]="priority.value">
+              <mat-icon [style.color]="getPriorityColor(priority.value)">
+                {{getPriorityIcon(priority.value)}}
+              </mat-icon>
+              {{priority.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categorías</mat-label>
+          <mat-select formControlName="category" multiple>
+            <mat-option *ngFor="let cat of categories" [value]="cat.value">
+              {{cat.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Fila 3: Rangos de Montos -->
+      <div class="filter-row amount-filters">
+        <mat-form-field appearance="outline" class="amount-field">
+          <mat-label>Monto Mínimo</mat-label>
+          <input matInput 
+                 type="number" 
+                 formControlName="minAmount"
+                 placeholder="0">
+          <span matTextPrefix>$</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="amount-field">
+          <mat-label>Monto Máximo</mat-label>
+          <input matInput 
+                 type="number" 
+                 formControlName="maxAmount"
+                 placeholder="Sin límite">
+          <span matTextPrefix>$</span>
+        </mat-form-field>
+
+        <div class="filter-summary">
+          <div class="summary-item">
+            <span class="summary-label">Total Encontrado:</span>
+            <span class="summary-value">{{totalFiltered | number}} servicios</span>
+          </div>
+          <div class="summary-item" *ngIf="hasFilters">
+            <span class="summary-label">De un total de:</span>
+            <span class="summary-value">{{totalOriginal | number}} servicios</span>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<!-- Loading Indicator -->
+<div class="loading-container" *ngIf="loading">
+  <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+  <p>Cargando datos del reporte...</p>
+</div>
+
+<!-- Main Content -->
+<div class="reports-content" *ngIf="!loading || hasData">
+  
+  <!-- Indicador de carga superpuesto -->
+  <div class="loading-overlay" *ngIf="loading && !hasData">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando datos del reporte...</p>
+  </div>
+  
+  <!-- Métricas Principales -->
+  <div class="metrics-grid" *ngIf="metrics">
+    <mat-card class="metric-card revenue">
+      <mat-card-content>
+        <div class="metric-icon">
+          <mat-icon>monetization_on</mat-icon>
+        </div>
+        <div class="metric-info">
+          <h3>{{formatCurrency(metrics.totalRevenue)}}</h3>
+          <p>Ingresos Totales</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card services">
+      <mat-card-content>
+        <div class="metric-icon">
+          <mat-icon>business_center</mat-icon>
+        </div>
+        <div class="metric-info">
+          <h3>{{metrics.totalServices | number}}</h3>
+          <p>Total Servicios</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card completed">
+      <mat-card-content>
+        <div class="metric-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="metric-info">
+          <h3>{{metrics.completedServices | number}}</h3>
+          <p>Completados</p>
+          <small>{{((metrics.completedServices / metrics.totalServices) * 100) | number:'1.0-1'}}%</small>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card rating">
+      <mat-card-content>
+        <div class="metric-icon">
+          <mat-icon>star</mat-icon>
+        </div>
+        <div class="metric-info">
+          <h3>{{metrics.averageRating | number:'1.1-1'}}</h3>
+          <p>Rating Promedio</p>
+          <small>de 5.0 estrellas</small>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card time">
+      <mat-card-content>
+        <div class="metric-icon">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="metric-info">
+          <h3>{{metrics.averageCompletionTime | number:'1.0-1'}}</h3>
+          <p>Días Promedio</p>
+          <small>para completar</small>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card pending">
+      <mat-card-content>
+        <div class="metric-icon">
+          <mat-icon>pending</mat-icon>
+        </div>
+        <div class="metric-info">
+          <h3>{{metrics.pendingServices | number}}</h3>
+          <p>Pendientes</p>
+          <small>{{((metrics.pendingServices / metrics.totalServices) * 100) | number:'1.0-1'}}%</small>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabs para diferentes vistas -->
+  <mat-tab-group (selectedTabChange)="onTabChange($event.index)" class="main-tabs">
+    
+    <!-- Tab 1: Vista de Datos -->
+    <mat-tab label="Datos">
+      <ng-template matTabContent>
+        <div class="data-controls" (click)="onUserInteraction()">
+          <div class="view-controls">
+            <mat-button-toggle-group [(value)]="viewMode" (change)="toggleViewMode()">
+              <mat-button-toggle value="table">
+                <mat-icon>table_rows</mat-icon>
+                Tabla
+              </mat-button-toggle>
+              <mat-button-toggle value="cards">
+                <mat-icon>view_module</mat-icon>
+                Tarjetas
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+
+        <!-- Vista de Tabla -->
+        <div class="table-container" *ngIf="viewMode === 'table'">
+          <table mat-table [dataSource]="reportData" class="data-table">
+            
+            <ng-container matColumnDef="entryNumber">
+              <th mat-header-cell *matHeaderCellDef>N° Asiento</th>
+              <td mat-cell *matCellDef="let element">
+                {{element.entryNumber}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Descripción</th>
+              <td mat-cell *matCellDef="let element">
+                <div class="title-cell">
+                  <strong>{{element.description}}</strong>
+                  <small>{{translateType(element.type)}}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-chip [style.background-color]="getStatusColor(element.status)" 
+                         [style.color]="'white'">
+                  <mat-icon matChipLeadingIcon>{{getStatusIcon(element.status)}}</mat-icon>
+                  {{translateStatus(element.status)}}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="priority">
+              <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-chip [style.background-color]="getPriorityColor(element.priority)" 
+                         [style.color]="'white'">
+                  <mat-icon matChipLeadingIcon>{{getPriorityIcon(element.priority)}}</mat-icon>
+                  {{translatePriority(element.priority)}}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Monto</th>
+              <td mat-cell *matCellDef="let element">
+                <strong>{{formatCurrency(element.amount)}}</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="userName">
+              <th mat-header-cell *matHeaderCellDef>Usuario</th>
+              <td mat-cell *matCellDef="let element">
+                <div class="user-cell">
+                  <strong>{{element.userName}}</strong>
+                  <small>{{element.userEmail}}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Fecha</th>
+              <td mat-cell *matCellDef="let element">
+                {{formatDate(element.createdAt)}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="account">
+              <th mat-header-cell *matHeaderCellDef>Cuenta</th>
+              <td mat-cell *matCellDef="let element">
+                {{element.accountCode}} - {{element.accountName}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-icon-button matTooltip="Ver detalles">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+
+        <!-- Vista de Tarjetas -->
+        <div class="cards-container" *ngIf="viewMode === 'cards'">
+          <mat-card class="service-card" *ngFor="let item of reportData">
+            <mat-card-header>
+              <div mat-card-avatar class="service-avatar" [ngClass]="item.status">
+                <mat-icon>{{getStatusIcon(item.status)}}</mat-icon>
+              </div>
+              <mat-card-title>{{item.description}}</mat-card-title>
+              <mat-card-subtitle>
+                {{translateType(item.type)}} - {{item.userName}} - N° {{item.entryNumber}}
+              </mat-card-subtitle>
+              
+              <div class="card-actions">
+                <mat-chip-set>
+                  <mat-chip [style.background-color]="getPriorityColor(item.priority)" 
+                           [style.color]="'white'">
+                    <mat-icon matChipTrailingIcon>{{getPriorityIcon(item.priority)}}</mat-icon>
+                    {{translatePriority(item.priority)}}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="card-details">
+                <div class="detail-row">
+                  <span class="detail-label">Monto:</span>
+                  <span class="detail-value">{{formatCurrency(item.amount)}}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Fecha:</span>
+                  <span class="detail-value">{{formatDate(item.createdAt)}}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Cuenta:</span>
+                  <span class="detail-value">{{item.accountCode}} - {{item.accountName}}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Débito/Crédito:</span>
+                  <span class="detail-value">{{formatCurrency(item.debit)}} / {{formatCurrency(item.credit)}}</span>
+                </div>
+                <div class="detail-row" *ngIf="item.reference">
+                  <span class="detail-label">Referencia:</span>
+                  <span class="detail-value">{{item.reference}}</span>
+                </div>
+              </div>
+            </mat-card-content>
+            
+            <mat-card-actions>
+              <button mat-button color="primary">
+                <mat-icon>visibility</mat-icon>
+                Ver Detalles
+              </button>
+              <button mat-button>
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+
+        <!-- Mensaje de sin datos -->
+        <div class="no-data" *ngIf="!hasData">
+          <mat-icon>inbox</mat-icon>
+          <h3>No se encontraron datos</h3>
+          <p>No hay servicios que coincidan con los filtros aplicados.</p>
+          <button mat-raised-button color="primary" (click)="clearFilters()">
+            Limpiar Filtros
+          </button>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <!-- Tab 2: Gráficos -->
+    <mat-tab label="Gráficos">
+      <ng-template matTabContent>
+        <div class="charts-container">
+          
+          <!-- Fila 1 de Gráficos -->
+          <div class="charts-row">
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>donut_large</mat-icon>
+                  Distribución por Estado
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="chart-wrapper">
+                  <canvas #statusChart width="400" height="300"></canvas>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>show_chart</mat-icon>
+                  Evolución de Ingresos
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="chart-wrapper">
+                  <canvas #revenueChart width="400" height="300"></canvas>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <!-- Fila 2 de Gráficos -->
+          <div class="charts-row">
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>bar_chart</mat-icon>
+                  Tendencias Mensuales
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="chart-wrapper">
+                  <canvas #monthlyChart width="400" height="300"></canvas>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>category</mat-icon>
+                  Servicios por Categoría
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="chart-wrapper">
+                  <canvas #categoryChart width="400" height="300"></canvas>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <!-- Información adicional -->
+          <div class="chart-info" *ngIf="metrics">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>insights</mat-icon>
+                  Análisis Adicional
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="analysis-grid">
+                  
+                  <!-- Top Tipos de Servicio -->
+                  <div class="analysis-section">
+                    <h4>Top Tipos de Servicio</h4>
+                    <div class="top-services">
+                      <div class="service-item" *ngFor="let service of metrics.topServiceTypes.slice(0, 5)">
+                        <span class="service-name">{{service.type | titlecase}}</span>
+                        <div class="service-stats">
+                          <span class="service-count">{{service.count}} servicios</span>
+                          <span class="service-revenue">{{formatCurrency(service.revenue)}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Distribución de Prioridades -->
+                  <div class="analysis-section">
+                    <h4>Distribución de Prioridades</h4>
+                    <div class="priority-distribution">
+                      <div class="priority-item" *ngFor="let priority of metrics.priorityDistribution">
+                        <div class="priority-bar">
+                          <span class="priority-label">{{priority.priority | titlecase}}</span>
+                          <div class="bar-container">
+                            <div class="bar-fill" 
+                                 [style.width.%]="(priority.count / metrics.totalServices) * 100"
+                                 [style.background-color]="getPriorityColor(priority.priority)">
+                            </div>
+                            <span class="bar-value">{{priority.count}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Performance por Categoría -->
+                  <div class="analysis-section">
+                    <h4>Performance por Categoría</h4>
+                    <div class="category-performance">
+                      <div class="performance-item" *ngFor="let cat of metrics.categoryPerformance">
+                        <div class="category-name">{{cat.category | titlecase}}</div>
+                        <div class="category-stats">
+                          <div class="stat">
+                            <span class="stat-label">Servicios:</span>
+                            <span class="stat-value">{{cat.count}}</span>
+                          </div>
+                          <div class="stat" *ngIf="cat.avgRating > 0">
+                            <span class="stat-label">Rating:</span>
+                            <span class="stat-value">{{cat.avgRating}}/5</span>
+                          </div>
+                          <div class="stat" *ngIf="cat.avgHours > 0">
+                            <span class="stat-label">Horas promedio:</span>
+                            <span class="stat-value">{{cat.avgHours}}h</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

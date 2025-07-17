@@ -1,48 +1,54 @@
-<mat-toolbar color="primary" class="header-toolbar">
-  <div class="toolbar-content">
+<mat-toolbar color="primary" class="app-header">
+  <div class="toolbar-content flex justify-between items-center full-width">
     <!-- Logo y título -->
-    <div class="brand">
+    <div class="brand flex items-center gap-8">
       <mat-icon class="brand-icon">account_balance</mat-icon>
       <span class="brand-title" routerLink="/dashboard">Sistema Contable</span>
     </div>
 
     <!-- Navegación -->
-    <nav class="navigation" *ngIf="currentUser$ | async as user">
-      <button mat-button routerLink="/dashboard" routerLinkActive="active">
+    <nav class="navigation flex gap-8" *ngIf="currentUser$ | async as user">
+      <button mat-button routerLink="/dashboard" routerLinkActive="active" class="nav-button">
         <mat-icon>dashboard</mat-icon>
         <span class="nav-label">Dashboard</span>
       </button>
       
-      <button mat-button routerLink="/users" routerLinkActive="active">
+      <button mat-button routerLink="/users" routerLinkActive="active" class="nav-button">
         <mat-icon>group</mat-icon>
         <span class="nav-label">Usuarios</span>
       </button>
       
-      <button mat-button routerLink="/services" routerLinkActive="active">
+      <button mat-button routerLink="/services" routerLinkActive="active" class="nav-button">
         <mat-icon>work</mat-icon>
         <span class="nav-label">Servicios</span>
       </button>
       
-      <button mat-button routerLink="/form21" routerLinkActive="active">
+      <button mat-button routerLink="/reports" routerLinkActive="active" class="nav-button">
+        <mat-icon>assessment</mat-icon>
+        <span class="nav-label">Reportes</span>
+      </button>
+      
+      <button mat-button routerLink="/form21" routerLinkActive="active" class="nav-button">
         <mat-icon>description</mat-icon>
         <span class="nav-label">Formulario 21</span>
       </button>
     </nav>
 
     <!-- Acciones del usuario -->
-    <div class="user-actions" *ngIf="currentUser$ | async as user">
+    <div class="user-actions flex items-center gap-8" *ngIf="currentUser$ | async as user">
       <!-- Notificaciones -->
       <button mat-icon-button 
               [matBadge]="3" 
               matBadgeColor="warn" 
               matBadgeSize="small"
-              matTooltip="Notificaciones">
+              matTooltip="Notificaciones"
+              class="notification-button">
         <mat-icon>notifications</mat-icon>
       </button>
 
       <!-- Menú de usuario -->
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
-        <div class="user-info">
+        <div class="user-info flex items-center gap-8">
           <div class="user-avatar" *ngIf="!user.photoUrl">
             {{getUserInitials(user)}}
           </div>

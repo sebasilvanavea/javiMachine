@@ -59,7 +59,7 @@ export class UserList implements OnInit {
   displayedColumns: string[] = ['user', 'company', 'contact', 'services', 'status', 'actions'];
 
   ngOnInit(): void {
-    // Inicializar observables de estado
+    // Para la carga inicial, usar un estado simple
     this.isLoadingUsers$ = this.optimizedClickService.isProcessing$('load-users');
     
     this.loadUsers();
@@ -68,18 +68,21 @@ export class UserList implements OnInit {
 
   // ===== CARGA DE DATOS =====
   private loadUsers(): void {
-    // Usar servicio optimizado para cargar usuarios
-    this.optimizedClickService.handleDataLoad(
-      'load-users',
-      () => this.userService.getUsers()
-    ).subscribe({
+    // Marcar como cargando manualmente
+    this.optimizedClickService.setLoadingState('load-users', true);
+    
+    // Cargar usuarios directamente
+    this.userService.getUsers().subscribe({
       next: (users) => {
         this.users = users;
         this.filteredUsers = users;
+        this.optimizedClickService.setLoadingState('load-users', false);
+        console.log('✅ Usuarios cargados inmediatamente:', users.length);
       },
       error: (error) => {
         console.error('Error cargando usuarios:', error);
         this.snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 });
+        this.optimizedClickService.setLoadingState('load-users', false);
       }
     });
   }

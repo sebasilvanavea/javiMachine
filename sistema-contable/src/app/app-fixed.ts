@@ -5,13 +5,15 @@ import { filter } from 'rxjs/operators';
 
 import { Header } from './components/layout/header/header';
 import { AuthService } from './services/auth.service';
+import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
 
 @Component({
   selector: 'app-root',
   imports: [
     CommonModule,
     RouterOutlet,
-    Header
+    Header,
+    NotificationToastComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

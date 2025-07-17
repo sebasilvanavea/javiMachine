@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Exportación</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>Test de Exportación</h1>
+    <button onclick="testPDF()">Test PDF</button>
+    <button onclick="testExcel()">Test Excel</button>
+    <button onclick="testCSV()">Test CSV</button>
+    
+    <script>
+        function testPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text('Test de PDF desde navegador', 20, 20);
+                doc.save('test.pdf');
+                console.log('PDF generado correctamente');
+            } catch (error) {
+                console.error('Error generando PDF:', error);
+            }
+        }
+        
+        function testExcel() {
+            try {
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet([
+                    ['Nombre', 'Valor'],
+                    ['Test', '123']
+                ]);
+                XLSX.utils.book_append_sheet(wb, ws, 'Test');
+                XLSX.writeFile(wb, 'test.xlsx');
+                console.log('Excel generado correctamente');
+            } catch (error) {
+                console.error('Error generando Excel:', error);
+            }
+        }
+        
+        function testCSV() {
+            try {
+                const csvData = 'Nombre,Valor\nTest,123';
+                const blob = new Blob([csvData], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'test.csv';
+                a.click();
+                console.log('CSV generado correctamente');
+            } catch (error) {
+                console.error('Error generando CSV:', error);
+            }
+        }
+    </script>
+</body>
+</html>

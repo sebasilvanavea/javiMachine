@@ -220,6 +220,7 @@
   .company-name {
     font-weight: 500;
     color: #333;
+    font-size: 14px;
     margin-bottom: 4px;
   }
   
@@ -446,28 +447,6 @@
     .mat-mdc-header-cell,
     .mat-mdc-cell {
       padding: 12px 8px;
-    }
-  }
-}
-
-// ===== TEMA OSCURO (OPCIONAL) =====
-@media (prefers-color-scheme: dark) {
-  .user-list-container {
-    color: #e0e0e0;
-  }
-  
-  .list-header .header-info h1 {
-    color: #e0e0e0;
-  }
-  
-  .users-table {
-    .mat-mdc-header-cell {
-      background-color: #424242;
-      color: #e0e0e0;
-    }
-    
-    .user-row:hover {
-      background-color: #424242;
     }
   }
 }

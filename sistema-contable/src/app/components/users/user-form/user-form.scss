@@ -17,8 +17,8 @@
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   
   .mat-mdc-card-header {
-    background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-main, #1E3A8A) 0%, var(--primary-light, #3B82F6) 100%);
+    color: var(--text-white, white);
     padding: 24px;
     
     .form-title {
@@ -28,6 +28,7 @@
       margin: 0;
       font-size: 1.5rem;
       font-weight: 600;
+      font-family: 'Poppins', sans-serif;
       
       mat-icon {
         font-size: 1.8rem;
@@ -37,8 +38,10 @@
     }
     
     .mat-mdc-card-subtitle {
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.9);
       margin-top: 8px;
+      font-weight: 400;
+      font-family: 'Inter', sans-serif;
     }
   }
   
@@ -57,7 +60,7 @@
   
   .mat-stepper-header {
     padding: 24px 16px 16px;
-    background: rgba(63, 81, 181, 0.05);
+    background: rgba(30, 58, 138, 0.06);
     border-radius: 12px;
     margin: 16px;
     transition: all 0.3s ease;
@@ -65,23 +68,24 @@
     &.cdk-keyboard-focused,
     &.cdk-program-focused,
     &:hover {
-      background: rgba(63, 81, 181, 0.1);
+      background: rgba(30, 58, 138, 0.12);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2);
+      box-shadow: var(--shadow-md);
     }
     
     .mat-stepper-icon {
-      background-color: #3f51b5;
-      color: white;
+      background-color: var(--primary-main, #1E3A8A);
+      color: var(--text-white, white);
     }
     
     .mat-stepper-icon-selected {
-      background-color: #4caf50;
+      background-color: var(--success-main, #10B981);
     }
   }
   
   .mat-stepper-horizontal-line {
-    border-top-color: rgba(63, 81, 181, 0.3);
+    border-top-color: var(--primary-main, #1E3A8A);
+    opacity: 0.3;
     margin: 0 16px;
   }
 }
@@ -130,11 +134,11 @@
     // Estilos para campos outline
     &.mat-form-field-appearance-outline {
       .mat-mdc-form-field-outline {
-        color: rgba(63, 81, 181, 0.3);
+        color: rgba(30, 58, 138, 0.3);
       }
       
       &.mat-focused .mat-mdc-form-field-outline-thick {
-        color: #3f51b5;
+        color: var(--primary-600, #1E3A8A);
       }
       
       .mat-mdc-form-field-label {
@@ -142,18 +146,18 @@
       }
       
       &.mat-focused .mat-mdc-form-field-label {
-        color: #3f51b5;
+        color: var(--primary-600, #1E3A8A);
       }
     }
     
     // Íconos de sufijo
     .mat-icon[matSuffix] {
-      color: rgba(63, 81, 181, 0.6);
+      color: rgba(30, 58, 138, 0.6);
       transition: color 0.3s ease;
     }
     
     &.mat-focused .mat-icon[matSuffix] {
-      color: #3f51b5;
+      color: var(--primary-600, #1E3A8A);
     }
   }
 }
@@ -205,18 +209,18 @@
     transition: all 0.3s ease;
     
     &:not(.mat-mdc-raised-button) {
-      color: rgba(63, 81, 181, 0.8);
+      color: rgba(30, 58, 138, 0.8);
       
       &:hover {
-        background-color: rgba(63, 81, 181, 0.05);
+        background-color: rgba(30, 58, 138, 0.08);
       }
     }
     
     &.mat-mdc-raised-button {
-      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
       
       &:hover {
-        box-shadow: 0 6px 16px rgba(63, 81, 181, 0.4);
+        box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4);
         transform: translateY(-2px);
       }
     }
@@ -232,7 +236,7 @@
 // ===== FORM ACTIONS =====
 .form-divider {
   margin: 0 24px;
-  border-color: rgba(63, 81, 181, 0.1);
+  border-color: rgba(30, 58, 138, 0.15);
 }
 
 .form-actions {
@@ -264,15 +268,15 @@
   }
   
   .submit-button {
-    background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+    background: linear-gradient(135deg, var(--primary-600, #1E3A8A) 0%, var(--primary-500, #3B82F6) 100%);
     color: white;
     padding: 12px 32px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
     position: relative;
     
     &:hover:not(:disabled) {
-      box-shadow: 0 6px 16px rgba(63, 81, 181, 0.4);
+      box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4);
       transform: translateY(-2px);
     }
     
@@ -302,7 +306,7 @@
   gap: 16px;
   
   mat-progress-spinner circle {
-    stroke: #3f51b5;
+    stroke: var(--primary-600, #1E3A8A);
   }
   
   p {
@@ -315,21 +319,21 @@
 // ===== ERROR STATES =====
 .mat-mdc-form-field.mat-form-field-invalid {
   .mat-mdc-form-field-outline-thick {
-    color: #f44336 !important;
+    color: var(--error-500, #EF4444) !important;
   }
   
   .mat-mdc-form-field-label {
-    color: #f44336 !important;
+    color: var(--error-500, #EF4444) !important;
   }
   
   .mat-icon[matSuffix] {
-    color: #f44336 !important;
+    color: var(--error-500, #EF4444) !important;
   }
 }
 
 .mat-mdc-form-field-error {
   font-size: 0.875rem;
-  color: #f44336;
+  color: var(--error-500, #EF4444);
   margin-top: 4px;
   display: flex;
   align-items: center;
@@ -407,17 +411,16 @@
 // ===== DARK MODE SUPPORT =====
 @media (prefers-color-scheme: dark) {
   .form-card {
-    background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
     color: white;
   }
   
   .step-content {
-    background: #2d2d2d;
+    background: #e7e7e7;
     color: white;
   }
   
   .checkbox-hint {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(238, 238, 238);
   }
   
   .form-actions {

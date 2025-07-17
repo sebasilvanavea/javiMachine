@@ -152,4 +152,30 @@ export class OptimizedClickService {
       shareReplay(1)
     );
   }
+
+  // Método para carga inmediata sin debounce (para cargas iniciales)
+  handleImmediateDataLoad<T>(
+    elementId: string,
+    dataLoader: () => Observable<T>
+  ): Observable<T> {
+    this.setProcessing(elementId, true);
+    
+    return dataLoader().pipe(
+      tap(data => {
+        console.log(`✅ Datos cargados inmediatamente para ${elementId}`);
+      }),
+      catchError(error => {
+        console.error(`❌ Error cargando datos para ${elementId}:`, error);
+        return throwError(() => error);
+      }),
+      finalize(() => {
+        this.setProcessing(elementId, false);
+      })
+    );
+  }
+
+  // Método público para controlar estados de loading manualmente
+  setLoadingState(elementId: string, isLoading: boolean): void {
+    this.setProcessing(elementId, isLoading);
+  }
 }

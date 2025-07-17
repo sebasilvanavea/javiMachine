@@ -407,4 +407,166 @@ export class ReportService {
   private generateId(): string {
     return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   }
+
+  // === MÉTODOS DE EXPORTACIÓN ===
+
+  // Exportar servicios a CSV
+  exportServicesToCSV(services: Service[], users: User[]): void {
+    const headers = [
+      'ID',
+      'Usuario',
+      'Email',
+      'Tipo',
+      'Descripción',
+      'Monto',
+      'Estado',
+      'Fecha Creación',
+      'Fecha Límite',
+      'Fecha Actualización'
+    ];
+
+    const csvContent = [
+      headers.join(','),
+      ...services.map(service => {
+        const user = users.find(u => u.id === service.userId);
+        return [
+          service.id,
+          user ? `"${user.name} ${user.lastName}"` : 'Usuario no encontrado',
+          user ? user.email : '',
+          this.getServiceTypeLabel(service.type),
+          `"${service.description}"`,
+          service.amount,
+          this.getServiceStatusLabel(service.status),
+          this.formatDate(service.createdAt),
+          this.formatDate(service.dueDate),
+          this.formatDate(service.updatedAt)
+        ].join(',');
+      })
+    ].join('\n');
+
+    this.downloadCSV(csvContent, `servicios_${this.formatDateForFilename(new Date())}.csv`);
+  }
+
+  // Exportar usuarios a CSV
+  exportUsersToCSV(users: User[]): void {
+    const headers = [
+      'ID',
+      'Nombre',
+      'Apellido',
+      'Email',
+      'RUT',
+      'Teléfono',
+      'Dirección',
+      'Ciudad',
+      'Región',
+      'Empresa',
+      'Profesión',
+      'Activo',
+      'Fecha Creación',
+      'Total Servicios'
+    ];
+
+    const csvContent = [
+      headers.join(','),
+      ...users.map(user => [
+        user.id,
+        `"${user.name}"`,
+        `"${user.lastName}"`,
+        user.email,
+        user.rut,
+        user.phone,
+        `"${user.address}"`,
+        `"${user.city}"`,
+        `"${user.region}"`,
+        user.company ? `"${user.company}"` : '',
+        `"${user.profession}"`,
+        user.isActive ? 'Sí' : 'No',
+        this.formatDate(user.createdAt),
+        user.services?.length || 0
+      ].join(','))
+    ].join('\n');
+
+    this.downloadCSV(csvContent, `usuarios_${this.formatDateForFilename(new Date())}.csv`);
+  }
+
+  // Exportar reporte financiero
+  exportFinancialReportToTXT(report: FinancialReport): void {
+    const content = [
+      '=== REPORTE FINANCIERO ===',
+      `Período: ${report.period}`,
+      `Fecha de generación: ${new Date().toLocaleString('es-CL')}`,
+      '',
+      '--- RESUMEN GENERAL ---',
+      `Ingresos totales: $${report.totalRevenue.toLocaleString('es-CL')}`,
+      `Gastos totales: $${report.totalExpenses.toLocaleString('es-CL')}`,
+      `Ingresos netos: $${report.netIncome.toLocaleString('es-CL')}`,
+      `Impuestos estimados: $${report.taxesOwed.toLocaleString('es-CL')}`,
+      '',
+      '--- DESGLOSE MENSUAL ---',
+      ...report.monthlyBreakdown.map(month => 
+        `${month.month}: Ingresos $${month.revenue.toLocaleString('es-CL')}, Gastos $${month.expenses.toLocaleString('es-CL')}, Neto $${month.netIncome.toLocaleString('es-CL')}`
+      ),
+      '',
+      '--- PRINCIPALES CLIENTES ---',
+      ...report.topClients.map(client => 
+        `${client.userName}: $${client.revenue.toLocaleString('es-CL')} (${client.servicesCount} servicios)`
+      )
+    ].join('\n');
+
+    this.downloadTXT(content, `reporte_financiero_${this.formatDateForFilename(new Date())}.txt`);
+  }
+
+  // Métodos auxiliares de exportación
+  private downloadCSV(content: string, filename: string): void {
+    const blob = new Blob(['\ufeff' + content], { type: 'text/csv;charset=utf-8;' });
+    this.downloadFile(blob, filename);
+  }
+
+  private downloadTXT(content: string, filename: string): void {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+    this.downloadFile(blob, filename);
+  }
+
+  private downloadFile(blob: Blob, filename: string): void {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  private getServiceTypeLabel(type: ServiceType): string {
+    const labels: Record<ServiceType, string> = {
+      [ServiceType.FORM_21]: 'Formulario 21',
+      [ServiceType.TAX_DECLARATION]: 'Declaración de Impuestos',
+      [ServiceType.ACCOUNTING]: 'Contabilidad',
+      [ServiceType.PAYROLL]: 'Nómina',
+      [ServiceType.CONSULTING]: 'Consultoría',
+      [ServiceType.OTHER]: 'Otro'
+    };
+    return labels[type] || type;
+  }
+
+  private getServiceStatusLabel(status: ServiceStatus): string {
+    const labels: Record<ServiceStatus, string> = {
+      [ServiceStatus.PENDING]: 'Pendiente',
+      [ServiceStatus.IN_PROGRESS]: 'En Proceso',
+      [ServiceStatus.COMPLETED]: 'Completado',
+      [ServiceStatus.OVERDUE]: 'Vencido',
+      [ServiceStatus.CANCELLED]: 'Cancelado'
+    };
+    return labels[status] || status;
+  }
+
+  private formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('es-CL');
+  }
+
+  private formatDateForFilename(date: Date): string {
+    return date.toISOString().split('T')[0].replace(/-/g, '');
+  }
 }

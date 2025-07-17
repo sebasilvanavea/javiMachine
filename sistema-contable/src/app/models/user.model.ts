@@ -87,6 +87,12 @@ export interface DashboardStats {
   revenueGrowthPercentage: number;
   serviceGrowthPercentage: number;
   revenueThisMonth: number;
+  
+  // Nuevas propiedades para el diseño mejorado
+  newUsersThisMonth: number;
+  serviceCompletionRate: number;
+  monthlyTarget: number;
+  
   servicesByStatus: {
     pending: number;
     inProgress: number;

@@ -1,0 +1,462 @@
+/* ===== REPORTES ESTILO CONTABILIUM ===== */
+
+.contabilium-reports {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--contabilium-gray-50) 0%, var(--contabilium-gray-100) 100%);
+  font-family: var(--contabilium-font-family);
+}
+
+/* HERO SECTION */
+.reports-hero {
+  background: linear-gradient(135deg, 
+    var(--contabilium-primary) 0%, 
+    var(--contabilium-primary-dark) 100%);
+  padding: var(--contabilium-space-10) var(--contabilium-space-8);
+  margin-bottom: var(--contabilium-space-8);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+    opacity: 0.4;
+  }
+}
+
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: var(--contabilium-space-6);
+    text-align: center;
+  }
+}
+
+.hero-left {
+  color: white;
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--contabilium-space-2);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: var(--contabilium-space-2) var(--contabilium-space-4);
+    border-radius: var(--contabilium-radius-full);
+    font-size: var(--contabilium-font-size-sm);
+    font-weight: 500;
+    margin-bottom: var(--contabilium-space-4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .hero-title {
+    font-size: var(--contabilium-font-size-3xl);
+    font-weight: 800;
+    margin: 0 0 var(--contabilium-space-3) 0;
+    line-height: 1.1;
+  }
+
+  .hero-subtitle {
+    font-size: var(--contabilium-font-size-lg);
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+.hero-right {
+  .contabilium-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(10px);
+    padding: var(--contabilium-space-3) var(--contabilium-space-6) !important;
+    border-radius: var(--contabilium-radius-md) !important;
+    font-weight: 600 !important;
+    transition: all var(--contabilium-transition-base) !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+      transform: translateY(-1px);
+    }
+
+    mat-icon {
+      margin-right: var(--contabilium-space-2) !important;
+    }
+  }
+}
+
+/* CONTENIDO PRINCIPAL */
+.reports-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--contabilium-space-8) var(--contabilium-space-12);
+
+  @media (max-width: 1024px) {
+    padding: 0 var(--contabilium-space-6) var(--contabilium-space-8);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 var(--contabilium-space-4) var(--contabilium-space-6);
+  }
+}
+
+/* MÉTRICAS RÁPIDAS */
+.quick-metrics {
+  margin-bottom: var(--contabilium-space-10);
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--contabilium-space-6);
+  }
+}
+
+.metric-card {
+  background: white;
+  border-radius: var(--contabilium-radius-xl);
+  padding: var(--contabilium-space-6);
+  box-shadow: var(--contabilium-shadow-md);
+  border: 1px solid var(--contabilium-gray-200);
+  transition: all var(--contabilium-transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--contabilium-space-4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--contabilium-shadow-lg);
+  }
+
+  .metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--contabilium-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
+  }
+
+  .metric-content {
+    flex: 1;
+
+    .metric-value {
+      font-size: var(--contabilium-font-size-2xl);
+      font-weight: 800;
+      margin-bottom: var(--contabilium-space-1);
+      color: var(--contabilium-gray-900);
+    }
+
+    .metric-label {
+      font-size: var(--contabilium-font-size-sm);
+      color: var(--contabilium-gray-600);
+      font-weight: 500;
+    }
+  }
+
+  &.primary .metric-icon {
+    background: var(--contabilium-primary);
+  }
+
+  &.success .metric-icon {
+    background: var(--contabilium-success);
+  }
+
+  &.warning .metric-icon {
+    background: var(--contabilium-warning);
+  }
+
+  &.info .metric-icon {
+    background: var(--contabilium-primary-light);
+    
+    mat-icon {
+      color: var(--contabilium-primary);
+    }
+  }
+}
+
+/* SECCIÓN DE GENERADORES */
+.report-generators {
+  margin-bottom: var(--contabilium-space-10);
+
+  .section-header {
+    margin-bottom: var(--contabilium-space-8);
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--contabilium-space-3);
+      margin: 0 0 var(--contabilium-space-2) 0;
+      font-size: var(--contabilium-font-size-2xl);
+      font-weight: 700;
+      color: var(--contabilium-gray-900);
+
+      mat-icon {
+        color: var(--contabilium-primary);
+      }
+    }
+
+    p {
+      margin: 0;
+      color: var(--contabilium-gray-600);
+      font-size: var(--contabilium-font-size-base);
+    }
+  }
+
+  .generators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--contabilium-space-6);
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.generator-card {
+  background: white;
+  border-radius: var(--contabilium-radius-xl);
+  border: 1px solid var(--contabilium-gray-200);
+  box-shadow: var(--contabilium-shadow-md);
+  overflow: hidden;
+  transition: all var(--contabilium-transition-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--contabilium-shadow-lg);
+  }
+
+  .card-header {
+    padding: var(--contabilium-space-6);
+    border-bottom: 1px solid var(--contabilium-gray-200);
+    display: flex;
+    align-items: center;
+    gap: var(--contabilium-space-4);
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--contabilium-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      &.users {
+        background: var(--contabilium-primary);
+      }
+
+      &.services {
+        background: var(--contabilium-success);
+      }
+
+      &.financial {
+        background: var(--contabilium-warning);
+      }
+
+      &.productivity {
+        background: #8b5cf6;
+      }
+    }
+
+    .card-title {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 var(--contabilium-space-1) 0;
+        font-size: var(--contabilium-font-size-lg);
+        font-weight: 600;
+        color: var(--contabilium-gray-900);
+      }
+
+      p {
+        margin: 0;
+        font-size: var(--contabilium-font-size-sm);
+        color: var(--contabilium-gray-600);
+      }
+    }
+  }
+
+  .card-content {
+    padding: var(--contabilium-space-6);
+
+    .date-range {
+      display: flex;
+      gap: var(--contabilium-space-4);
+      margin-bottom: var(--contabilium-space-6);
+
+      @media (max-width: 640px) {
+        flex-direction: column;
+        gap: var(--contabilium-space-3);
+      }
+
+      .date-field {
+        flex: 1;
+      }
+    }
+
+    .filters {
+      display: flex;
+      flex-direction: column;
+      gap: var(--contabilium-space-4);
+      margin-bottom: var(--contabilium-space-6);
+    }
+
+    .period-selector {
+      margin-bottom: var(--contabilium-space-6);
+
+      .period-toggle {
+        width: 100%;
+      }
+    }
+
+    .metrics-selector {
+      display: flex;
+      flex-direction: column;
+      gap: var(--contabilium-space-3);
+      margin-bottom: var(--contabilium-space-6);
+    }
+
+    .export-options {
+      display: flex;
+      gap: var(--contabilium-space-3);
+
+      .export-btn {
+        flex: 1;
+        border-radius: var(--contabilium-radius-md) !important;
+        padding: var(--contabilium-space-3) var(--contabilium-space-4) !important;
+        font-weight: 500 !important;
+        transition: all var(--contabilium-transition-base) !important;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+
+        mat-icon {
+          margin-right: var(--contabilium-space-2) !important;
+        }
+      }
+    }
+  }
+}
+
+/* HISTORIAL DE REPORTES */
+.report-history {
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--contabilium-space-6);
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--contabilium-space-3);
+      margin: 0;
+      font-size: var(--contabilium-font-size-2xl);
+      font-weight: 700;
+      color: var(--contabilium-gray-900);
+
+      mat-icon {
+        color: var(--contabilium-primary);
+      }
+    }
+  }
+
+  .history-table-container {
+    background: white;
+    border-radius: var(--contabilium-radius-xl);
+    border: 1px solid var(--contabilium-gray-200);
+    box-shadow: var(--contabilium-shadow-md);
+    overflow: hidden;
+
+    .contabilium-table {
+      width: 100%;
+
+      th {
+        background: var(--contabilium-gray-50);
+        font-weight: 600;
+        color: var(--contabilium-gray-700);
+        border-bottom: 1px solid var(--contabilium-gray-200);
+      }
+
+      td {
+        border-bottom: 1px solid var(--contabilium-gray-100);
+      }
+
+      .report-info {
+        .report-name {
+          font-weight: 600;
+          color: var(--contabilium-gray-900);
+          margin-bottom: var(--contabilium-space-1);
+        }
+
+        .report-type {
+          font-size: var(--contabilium-font-size-sm);
+          color: var(--contabilium-gray-600);
+        }
+      }
+    }
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .generators-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-hero {
+    padding: var(--contabilium-space-8) var(--contabilium-space-4);
+  }
+
+  .hero-left .hero-title {
+    font-size: var(--contabilium-font-size-2xl);
+  }
+
+  .metric-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .quick-metrics .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}

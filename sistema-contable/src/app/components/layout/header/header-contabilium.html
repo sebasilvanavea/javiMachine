@@ -1,0 +1,239 @@
+<header class="contabilium-header">
+  <div class="header-container">
+    <!-- Logo y Marca -->
+    <div class="brand-section">
+      <button mat-icon-button class="menu-toggle" (click)="toggleSidebar()" [class.sidebar-open]="sidebarOpen">
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <div class="brand" routerLink="/dashboard">
+        <div class="brand-icon">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">ContabiliuMax</span>
+          <span class="brand-subtitle">Sistema Contable</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Búsqueda Global -->
+    <div class="search-section" [class.expanded]="searchExpanded">
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix class="search-icon">search</mat-icon>
+          <input matInput 
+                 placeholder="Buscar usuarios, servicios, reportes..."
+                 [(ngModel)]="searchQuery"
+                 (focus)="expandSearch()"
+                 (blur)="collapseSearch()"
+                 (keyup.enter)="performSearch()">
+          <button matSuffix 
+                  mat-icon-button 
+                  *ngIf="searchQuery"
+                  (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      
+      <!-- Resultados de búsqueda rápida -->
+      <div class="quick-results" *ngIf="searchExpanded && searchResults.length > 0">
+        <div class="results-header">
+          <span>Resultados rápidos</span>
+        </div>
+        <div class="results-list">
+          <div class="result-item" 
+               *ngFor="let result of searchResults | slice:0:5"
+               (click)="navigateToResult(result)">
+            <mat-icon>{{result.icon}}</mat-icon>
+            <div class="result-info">
+              <span class="result-title">{{result.title}}</span>
+              <span class="result-type">{{result.type}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones y Usuario -->
+    <div class="actions-section" *ngIf="currentUser$ | async as user">
+      <!-- Notificaciones -->
+      <div class="notification-area">
+        <button mat-icon-button 
+                [matMenuTriggerFor]="notificationsMenu"
+                class="notification-btn"
+                [matBadge]="unreadNotifications"
+                [matBadgeHidden]="unreadNotifications === 0"
+                matBadgeColor="warn"
+                matTooltip="Notificaciones">
+          <mat-icon>notifications</mat-icon>
+        </button>
+        
+        <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+          <div class="notifications-header">
+            <h4>Notificaciones</h4>
+            <button mat-icon-button (click)="markAllAsRead()" matTooltip="Marcar todas como leídas">
+              <mat-icon>done_all</mat-icon>
+            </button>
+          </div>
+          
+          <div class="notifications-list">
+            <div class="notification-item" 
+                 *ngFor="let notification of notifications | slice:0:5"
+                 [class.unread]="!notification.read"
+                 (click)="handleNotification(notification)">
+              <div class="notification-icon" [class]="notification.type">
+                <mat-icon>{{getNotificationIcon(notification.type)}}</mat-icon>
+              </div>
+              <div class="notification-content">
+                <p class="notification-message">{{notification.message}}</p>
+                <span class="notification-time">{{notification.createdAt | date:'short'}}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="notifications-footer">
+            <button mat-button routerLink="/notifications" color="primary">
+              Ver todas las notificaciones
+            </button>
+          </div>
+        </mat-menu>
+      </div>
+
+      <!-- Accesos Rápidos -->
+      <div class="quick-actions">
+        <button mat-icon-button 
+                [matMenuTriggerFor]="quickMenu"
+                matTooltip="Acciones rápidas"
+                class="quick-actions-btn">
+          <mat-icon>add_circle</mat-icon>
+        </button>
+        
+        <mat-menu #quickMenu="matMenu">
+          <button mat-menu-item routerLink="/users/new">
+            <mat-icon>person_add</mat-icon>
+            <span>Nuevo Usuario</span>
+          </button>
+          <button mat-menu-item routerLink="/services/new">
+            <mat-icon>work</mat-icon>
+            <span>Nuevo Servicio</span>
+          </button>
+          <button mat-menu-item routerLink="/form21/new">
+            <mat-icon>description</mat-icon>
+            <span>Formulario 21</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="generateReport()">
+            <mat-icon>assessment</mat-icon>
+            <span>Generar Reporte</span>
+          </button>
+        </mat-menu>
+      </div>
+
+      <!-- Configuraciones -->
+      <button mat-icon-button 
+              [matMenuTriggerFor]="settingsMenu"
+              matTooltip="Configuración"
+              class="settings-btn">
+        <mat-icon>settings</mat-icon>
+      </button>
+      
+      <mat-menu #settingsMenu="matMenu">
+        <button mat-menu-item routerLink="/settings/profile">
+          <mat-icon>person</mat-icon>
+          <span>Mi Perfil</span>
+        </button>
+        <button mat-menu-item routerLink="/settings/preferences">
+          <mat-icon>tune</mat-icon>
+          <span>Preferencias</span>
+        </button>
+        <button mat-menu-item routerLink="/settings/system">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Configuración del Sistema</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="showHelp()">
+          <mat-icon>help</mat-icon>
+          <span>Ayuda y Soporte</span>
+        </button>
+      </mat-menu>
+
+      <!-- Perfil de Usuario -->
+      <div class="user-profile">
+        <button mat-button 
+                [matMenuTriggerFor]="userMenu"
+                class="user-profile-btn">
+          <div class="user-avatar">
+            <img *ngIf="user.photoUrl" [src]="user.photoUrl" [alt]="user.name">
+            <div *ngIf="!user.photoUrl" class="avatar-placeholder">
+              {{getInitials(user.name, user.lastName)}}
+            </div>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{user.name}} {{user.lastName}}</span>
+            <span class="user-role">Administrador</span>
+          </div>
+          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+        </button>
+        
+        <mat-menu #userMenu="matMenu" class="user-menu">
+          <div class="user-menu-header">
+            <div class="user-avatar-large">
+              <img *ngIf="user.photoUrl" [src]="user.photoUrl" [alt]="user.name">
+              <div *ngIf="!user.photoUrl" class="avatar-placeholder">
+                {{getInitials(user.name, user.lastName)}}
+              </div>
+            </div>
+            <div class="user-details">
+              <h4>{{user.name}} {{user.lastName}}</h4>
+              <p>{{user.email}}</p>
+            </div>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>account_circle</mat-icon>
+            <span>Mi Cuenta</span>
+          </button>
+          <button mat-menu-item routerLink="/profile/security">
+            <mat-icon>security</mat-icon>
+            <span>Seguridad</span>
+          </button>
+          <button mat-menu-item (click)="switchTheme()">
+            <mat-icon>{{isDarkMode ? 'light_mode' : 'dark_mode'}}</mat-icon>
+            <span>{{isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}}</span>
+          </button>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item (click)="logout()" color="warn">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-section" *ngIf="breadcrumbs.length > 0">
+    <div class="breadcrumb-container">
+      <nav class="breadcrumb">
+        <span class="breadcrumb-item" 
+              *ngFor="let crumb of breadcrumbs; let last = last"
+              [class.active]="last">
+          <a *ngIf="!last && crumb.url" [routerLink]="crumb.url">{{crumb.label}}</a>
+          <span *ngIf="last || !crumb.url">{{crumb.label}}</span>
+          <mat-icon *ngIf="!last" class="breadcrumb-separator">chevron_right</mat-icon>
+        </span>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" 
+     *ngIf="sidebarOpen" 
+     (click)="closeSidebar()"></div>
