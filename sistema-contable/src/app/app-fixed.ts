@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 // import { Header } from './components/layout/header/header'; // No usado en esta versión
@@ -12,6 +12,8 @@ import { NotificationToastComponent } from './components/notification-toast/noti
   imports: [
     CommonModule,
     RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
     NotificationToastComponent
   ],
   templateUrl: './app.html',
