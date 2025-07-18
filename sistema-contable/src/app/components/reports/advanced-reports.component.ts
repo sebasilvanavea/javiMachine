@@ -39,6 +39,13 @@ import {
 
 import { ExportConfigDialogComponent } from './export-config-dialog.component';
 
+// Interfaces locales
+interface SelectOption {
+  value: string;
+  label: string;
+  icon?: string;
+}
+
 // Registrar Chart.js
 Chart.register(...registerables);
 
@@ -107,31 +114,61 @@ export class AdvancedReportsComponent implements OnInit, OnDestroy {
   revenueChart: Chart | null = null;
   categoryChart: Chart | null = null;
   
+  // Propiedades computadas para el filtro
+  get selectedPeriod(): string {
+    const dateFrom = this.filterForm?.get('dateFrom')?.value;
+    const dateTo = this.filterForm?.get('dateTo')?.value;
+    if (dateFrom && dateTo) {
+      return `${this.formatDate(dateFrom)} - ${this.formatDate(dateTo)}`;
+    }
+    return 'Todos los períodos';
+  }
+  
+  get selectedService(): string {
+    const types = this.filterForm?.get('serviceTypes')?.value;
+    if (types && types.length > 0) {
+      return types.length === 1 ? this.getServiceTypeLabel(types[0]) : `${types.length} servicios`;
+    }
+    return 'Todos los servicios';
+  }
+  
+  get minAmount(): number | null {
+    return this.filterForm?.get('minAmount')?.value || null;
+  }
+  
+  get maxAmount(): number | null {
+    return this.filterForm?.get('maxAmount')?.value || null;
+  }
+  
+  get searchTerm(): string {
+    return this.filterForm?.get('searchQuery')?.value || '';
+  }
+  
   // Opciones para filtros en español
-  serviceTypes = [
-    { value: 'journal', label: 'Asientos Contables' },
-    { value: 'transaction', label: 'Transacciones' },
-    { value: 'adjustment', label: 'Ajustes' }
+  serviceTypes: SelectOption[] = [
+    { value: 'journal', label: 'Asientos Contables', icon: 'book' },
+    { value: 'transaction', label: 'Transacciones', icon: 'swap_horiz' },
+    { value: 'adjustment', label: 'Ajustes', icon: 'tune' }
   ];
   
-  serviceStatuses = [
-    { value: 'posted', label: 'Contabilizado' },
-    { value: 'draft', label: 'Borrador' },
-    { value: 'reversed', label: 'Reversado' }
+  serviceStatuses: SelectOption[] = [
+    { value: 'posted', label: 'Contabilizado', icon: 'check_circle' },
+    { value: 'draft', label: 'Borrador', icon: 'edit' },
+    { value: 'reversed', label: 'Reversado', icon: 'undo' }
   ];
   
-  priorities = [
-    { value: 'low', label: 'Baja' },
-    { value: 'medium', label: 'Media' },
-    { value: 'high', label: 'Alta' },
-    { value: 'urgent', label: 'Urgente' }
+  priorities: SelectOption[] = [
+    { value: 'low', label: 'Baja', icon: 'low_priority' },
+    { value: 'medium', label: 'Media', icon: 'remove' },
+    { value: 'high', label: 'Alta', icon: 'priority_high' },
+    { value: 'urgent', label: 'Urgente', icon: 'error' }
   ];
   
-  categories = [
-    { value: 'operational', label: 'Operacional' },
-    { value: 'adjustment', label: 'Ajuste' },
-    { value: 'closing', label: 'Cierre' },
-    { value: 'opening', label: 'Apertura' }
+  categories: SelectOption[] = [
+    { value: 'operational', label: 'Operacional', icon: 'business' },
+    { value: 'adjustment', label: 'Ajuste', icon: 'tune' },
+    { value: 'closing', label: 'Cierre', icon: 'lock' },
+    { value: 'opening', label: 'Apertura', icon: 'lock_open' }
   ];
 
   // Columnas para la tabla en español
@@ -1361,6 +1398,17 @@ export class AdvancedReportsComponent implements OnInit, OnDestroy {
         panelClass: ['error-snackbar']
       });
     }
+  }
+
+  // === MÉTODOS AUXILIARES ===
+  
+  getServiceTypeLabel(value: string): string {
+    const serviceType = this.serviceTypes.find(type => type.value === value);
+    return serviceType ? serviceType.label : value;
+  }
+  
+  getTotalAmount(): number {
+    return this.filteredData.reduce((total, item) => total + (item.amount || 0), 0);
   }
 
 }

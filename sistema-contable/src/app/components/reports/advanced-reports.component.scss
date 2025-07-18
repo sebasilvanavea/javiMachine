@@ -8,6 +8,7 @@ $gray-50: #F9FAFB;
 $gray-100: #F3F4F6;
 $gray-200: #E5E7EB;
 $gray-300: #D1D5DB;
+$gray-400: #9CA3AF;
 $gray-500: #6B7280;
 $gray-600: #4B5563;
 $gray-700: #374151;
@@ -82,11 +83,17 @@ $gray-900: #111827;
   
   .action-buttons {
     display: flex;
-    gap: 1rem;
+    gap: 12px;
     align-items: center;
     
     button {
-      &[mat-icon-button] {
+      border-radius: 6px;
+      font-size: 14px;
+      padding: 8px 16px;
+      
+      &.mat-mdc-icon-button {
+        width: 40px;
+        height: 40px;
         background: rgba(255, 255, 255, 0.1);
         
         &:hover {
@@ -94,7 +101,7 @@ $gray-900: #111827;
         }
       }
       
-      &[mat-raised-button] {
+      &.mat-mdc-raised-button {
         background: rgba(255, 255, 255, 0.15);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.3);
@@ -110,14 +117,26 @@ $gray-900: #111827;
 // === FILTROS ===
 
 .filters-card {
-  @include card-shadow;
-  margin-bottom: 2rem;
-  border-radius: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid $gray-200;
+  background: white;
   overflow: hidden;
   
   mat-card-header {
     background: $gray-50;
-    padding: 1.5rem 2rem;
+    padding: 12px 16px;
+    border-bottom: 1px solid $gray-200;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, $primary-color 0%, $secondary-color 100%);
+    }
     
     mat-card-title {
       display: flex;
@@ -125,9 +144,17 @@ $gray-900: #111827;
       gap: 0.5rem;
       color: $gray-700;
       font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0;
       
       mat-icon {
         color: $primary-color;
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 6px;
+        padding: 0.2rem;
       }
     }
     
@@ -141,72 +168,235 @@ $gray-900: #111827;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.9rem;
-        color: $gray-500;
+        font-size: 0.8rem;
+        color: $gray-600;
+        background: rgba(245, 158, 11, 0.1);
+        padding: 0.4rem 0.8rem;
+        border-radius: 16px;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        font-weight: 500;
         
         mat-icon {
           color: $warning-color;
+          font-size: 0.9rem;
+          width: 0.9rem;
+          height: 0.9rem;
+        }
+      }
+      
+      // Estilos para el botón de limpiar filtros
+      button[mat-button] {
+        border-radius: 16px;
+        padding: 0.4rem 1rem;
+        font-weight: 500;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        
+        &[color="warn"] {
+          background: rgba(239, 68, 68, 0.1);
+          color: $error-color;
+          border-color: rgba(239, 68, 68, 0.2);
+          
+          &:hover:not([disabled]) {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: $error-color;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+          }
+          
+          &[disabled] {
+            opacity: 0.5;
+            background: $gray-100;
+            color: $gray-400;
+            border-color: $gray-200;
+          }
+        }
+        
+        mat-icon {
+          margin-right: 0.5rem;
         }
       }
     }
   }
   
   .filters-form {
-    padding: 1.5rem 2rem 2rem;
+    padding: 1.5rem;
+    background: white;
     
     .filter-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
       margin-bottom: 1.5rem;
+      align-items: flex-start;
       
       &:last-child {
         margin-bottom: 0;
       }
       
       &.amount-filters {
-        grid-template-columns: 200px 200px 1fr;
-        align-items: end;
+        .amount-field {
+          flex: 0 0 180px;
+        }
         
-        @media (max-width: 768px) {
-          grid-template-columns: 1fr;
-          gap: 1rem;
+        .filter-summary {
+          flex: 1;
+          min-width: 250px;
+        }
+      }
+      
+      // Hacer los campos más uniformes
+      > * {
+        flex: 1;
+        min-width: 200px;
+      }
+    }
+    
+    // Estilos mejorados para los campos de formulario
+    ::ng-deep .mat-mdc-form-field {
+      width: 100%;
+      
+      .mat-mdc-text-field-wrapper {
+        background: white;
+        border-radius: 4px;
+        border: 1px solid $gray-300;
+        transition: all 0.2s ease;
+        box-shadow: none;
+        
+        &:hover {
+          border-color: $primary-color;
+        }
+      }
+      
+      &.mat-focused .mat-mdc-text-field-wrapper {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
+      
+      .mat-mdc-form-field-label {
+        color: $gray-600;
+        font-weight: 500;
+      }
+      
+      &.mat-focused .mat-mdc-form-field-label {
+        color: $primary-color;
+      }
+      
+      .mat-mdc-input-element {
+        padding: 12px;
+        font-size: 14px;
+        color: $gray-700;
+      }
+      
+      // Estilos para select
+      .mat-mdc-select-value {
+        padding: 12px;
+        font-size: 14px;
+        color: $gray-700;
+      }
+      
+      .mat-mdc-select-arrow {
+        color: $primary-color;
+      }
+    }
+    
+    // Estilos para campos específicos
+    .date-field, .amount-field {
+      max-width: 200px;
+      
+      ::ng-deep .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          background: linear-gradient(135deg, white 0%, rgba(59, 130, 246, 0.01) 100%);
         }
       }
     }
     
-    .date-field, .amount-field {
-      max-width: 200px;
-    }
-    
     .search-field {
-      min-width: 300px;
+      min-width: 250px;
+      
+      ::ng-deep .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          background: linear-gradient(135deg, white 0%, rgba(16, 185, 129, 0.01) 100%);
+          
+          &:hover {
+            border-color: $success-color;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
+          }
+        }
+        
+        &.mat-focused .mat-mdc-text-field-wrapper {
+          border-color: $success-color;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        &.mat-focused .mat-mdc-form-field-label {
+          color: $success-color;
+        }
+      }
     }
     
     .filter-summary {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      justify-self: end;
-      text-align: right;
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid $gray-200;
+      min-width: 180px;
+      flex-shrink: 0;
       
       @media (max-width: 768px) {
-        justify-self: start;
-        text-align: left;
+        width: 100%;
+        margin-top: 12px;
+      }
+      
+      .summary-title {
+        font-weight: 600;
+        color: $gray-700;
+        font-size: 14px;
+        margin-bottom: 8px;
       }
       
       .summary-item {
         display: flex;
-        gap: 0.5rem;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
         
         .summary-label {
           color: $gray-500;
-          font-size: 0.9rem;
+          font-size: 12px;
         }
         
         .summary-value {
           font-weight: 600;
           color: $primary-color;
+          font-size: 13px;
+          background: rgba(59, 130, 246, 0.1);
+          padding: 0.2rem 0.5rem;
+          border-radius: 12px;
+          border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+      }
+      .summary-total {
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid $primary-color;
+        
+        .summary-item {
+          border-bottom: none;
+          
+          .summary-label {
+            color: $gray-700;
+            font-weight: 600;
+            font-size: 0.85rem;
+          }
+          
+          .summary-value {
+            background: $primary-color;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+          }
         }
       }
     }
@@ -932,7 +1122,131 @@ $gray-900: #111827;
 
 // === RESPONSIVE ===
 
+@media (max-width: 1200px) {
+  .reports-header {
+    .header-content {
+      padding: 0 1rem;
+    }
+  }
+  
+  .filters-card {
+    margin: 0 1rem 2rem;
+    
+    .filters-form {
+      padding: 1.5rem;
+      
+      .filter-row {
+        gap: 1.5rem;
+        
+        &.amount-filters {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
+  .reports-header {
+    .page-title {
+      font-size: 1.5rem;
+      
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+  
+  .filters-card {
+    margin: 0 0.5rem 1.5rem;
+    border-radius: 12px;
+    
+    mat-card-header {
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      
+      mat-card-title {
+        font-size: 1.1rem;
+      }
+      
+      .filter-actions {
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 0;
+        
+        .filter-count {
+          font-size: 0.8rem;
+          padding: 0.4rem 0.8rem;
+        }
+        
+        button[mat-button] {
+          padding: 0.4rem 1rem;
+          font-size: 0.9rem;
+        }
+      }
+    }
+    
+    .filters-form {
+      padding: 1rem;
+      
+      .filter-row {
+        gap: 1rem;
+        margin-bottom: 1rem;
+        
+        &.amount-filters {
+          gap: 1rem;
+        }
+      }
+      
+      .filter-summary {
+        grid-column: 1;
+        margin-top: 1rem;
+        min-width: auto;
+        
+        .summary-title {
+          font-size: 0.95rem;
+        }
+        
+        .summary-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+          padding: 0.5rem 0;
+          
+          .summary-label {
+            font-size: 0.85rem;
+          }
+          
+          .summary-value {
+            font-size: 0.9rem;
+            padding: 0.2rem 0.6rem;
+          }
+        }
+      }
+      
+      // Ajustes para campos de formulario en móvil
+      ::ng-deep .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          border-radius: 8px;
+        }
+        
+        .mat-mdc-input-element,
+        .mat-mdc-select-value {
+          padding: 0.8rem;
+          font-size: 0.9rem;
+        }
+        
+        .mat-mdc-form-field-label {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+  
   .metrics-grid {
     grid-template-columns: 1fr;
   }

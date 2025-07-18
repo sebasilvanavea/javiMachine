@@ -129,50 +129,69 @@
   <mat-card-content>
     <form [formGroup]="filterForm" class="filters-form">
       <!-- Fila 1: Fechas y Búsqueda -->
-      <div class="filter-row">
-        <mat-form-field appearance="outline" class="date-field">
-          <mat-label>Fecha Desde</mat-label>
+      <div class="filter-row smooth-transition">
+        <mat-form-field appearance="outline" class="date-field hover-lift">
+          <mat-label>
+            <mat-icon>event</mat-icon>
+            Fecha Desde
+          </mat-label>
           <input matInput 
                  [matDatepicker]="fromPicker" 
                  formControlName="dateFrom"
-                 placeholder="DD/MM/AAAA">
+                 placeholder="DD/MM/AAAA"
+                 class="focus-ring">
           <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromPicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="date-field">
-          <mat-label>Fecha Hasta</mat-label>
+        <mat-form-field appearance="outline" class="date-field hover-lift">
+          <mat-label>
+            <mat-icon>event_available</mat-icon>
+            Fecha Hasta
+          </mat-label>
           <input matInput 
                  [matDatepicker]="toPicker" 
                  formControlName="dateTo"
-                 placeholder="DD/MM/AAAA">
+                 placeholder="DD/MM/AAAA"
+                 class="focus-ring">
           <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
           <mat-datepicker #toPicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Búsqueda General</mat-label>
+        <mat-form-field appearance="outline" class="search-field hover-lift">
+          <mat-label>
+            <mat-icon>search</mat-icon>
+            Búsqueda General
+          </mat-label>
           <input matInput 
                  formControlName="searchQuery"
-                 placeholder="Buscar en título, usuario, descripción...">
-          <mat-icon matSuffix>search</mat-icon>
+                 placeholder="Buscar en título, usuario, descripción..."
+                 class="focus-ring">
+          <mat-icon matSuffix color="accent">search</mat-icon>
         </mat-form-field>
       </div>
 
       <!-- Fila 2: Selecciones Múltiples -->
-      <div class="filter-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Tipos de Servicio</mat-label>
-          <mat-select formControlName="serviceTypes" multiple>
+      <div class="filter-row smooth-transition">
+        <mat-form-field appearance="outline" class="hover-lift">
+          <mat-label>
+            <mat-icon>business_center</mat-icon>
+            Tipos de Servicio
+          </mat-label>
+          <mat-select formControlName="serviceTypes" multiple class="focus-ring">
             <mat-option *ngFor="let type of serviceTypes" [value]="type.value">
+              <mat-icon>{{type.icon || 'work'}}</mat-icon>
               {{type.label}}
             </mat-option>
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Estados</mat-label>
-          <mat-select formControlName="serviceStatus" multiple>
+        <mat-form-field appearance="outline" class="hover-lift">
+          <mat-label>
+            <mat-icon>flag</mat-icon>
+            Estados
+          </mat-label>
+          <mat-select formControlName="serviceStatus" multiple class="focus-ring">
             <mat-option *ngFor="let status of serviceStatuses" [value]="status.value">
               <mat-icon [style.color]="getStatusColor(status.value)">
                 {{getStatusIcon(status.value)}}
@@ -182,9 +201,12 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Prioridades</mat-label>
-          <mat-select formControlName="priority" multiple>
+        <mat-form-field appearance="outline" class="hover-lift">
+          <mat-label>
+            <mat-icon>priority_high</mat-icon>
+            Prioridades
+          </mat-label>
+          <mat-select formControlName="priority" multiple class="focus-ring">
             <mat-option *ngFor="let priority of priorities" [value]="priority.value">
               <mat-icon [style.color]="getPriorityColor(priority.value)">
                 {{getPriorityIcon(priority.value)}}
@@ -194,10 +216,14 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Categorías</mat-label>
-          <mat-select formControlName="category" multiple>
+        <mat-form-field appearance="outline" class="hover-lift">
+          <mat-label>
+            <mat-icon>category</mat-icon>
+            Categorías
+          </mat-label>
+          <mat-select formControlName="category" multiple class="focus-ring">
             <mat-option *ngFor="let cat of categories" [value]="cat.value">
+              <mat-icon>{{cat.icon || 'label'}}</mat-icon>
               {{cat.label}}
             </mat-option>
           </mat-select>
@@ -205,33 +231,98 @@
       </div>
 
       <!-- Fila 3: Rangos de Montos -->
-      <div class="filter-row amount-filters">
-        <mat-form-field appearance="outline" class="amount-field">
-          <mat-label>Monto Mínimo</mat-label>
+      <div class="filter-row amount-filters smooth-transition">
+        <mat-form-field appearance="outline" class="amount-field hover-lift">
+          <mat-label>
+            <mat-icon>arrow_upward</mat-icon>
+            Monto Mínimo
+          </mat-label>
           <input matInput 
                  type="number" 
                  formControlName="minAmount"
-                 placeholder="0">
+                 placeholder="0"
+                 class="focus-ring">
           <span matTextPrefix>$</span>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="amount-field">
-          <mat-label>Monto Máximo</mat-label>
+        <mat-form-field appearance="outline" class="amount-field hover-lift">
+          <mat-label>
+            <mat-icon>arrow_downward</mat-icon>
+            Monto Máximo
+          </mat-label>
           <input matInput 
                  type="number" 
                  formControlName="maxAmount"
-                 placeholder="Sin límite">
+                 placeholder="Sin límite"
+                 class="focus-ring">
           <span matTextPrefix>$</span>
         </mat-form-field>
 
         <div class="filter-summary">
+          <div class="summary-title">
+            <mat-icon>analytics</mat-icon>
+            Resumen de Filtros
+          </div>
+          
           <div class="summary-item">
-            <span class="summary-label">Total Encontrado:</span>
+            <span class="summary-label">
+              <mat-icon>list_alt</mat-icon>
+              Total Encontrado
+            </span>
             <span class="summary-value">{{totalFiltered | number}} servicios</span>
           </div>
+          
           <div class="summary-item" *ngIf="hasFilters">
-            <span class="summary-label">De un total de:</span>
+            <span class="summary-label">
+              <mat-icon>database</mat-icon>
+              De un total de
+            </span>
             <span class="summary-value">{{totalOriginal | number}} servicios</span>
+          </div>
+          
+          <div class="summary-item" *ngIf="selectedPeriod && selectedPeriod !== 'all'">
+            <span class="summary-label">
+              <mat-icon>date_range</mat-icon>
+              Período
+            </span>
+            <span class="summary-value">{{ selectedPeriod }}</span>
+          </div>
+          
+          <div class="summary-item" *ngIf="selectedService && selectedService !== 'all'">
+            <span class="summary-label">
+              <mat-icon>business</mat-icon>
+              Servicio
+            </span>
+            <span class="summary-value">{{ selectedService }}</span>
+          </div>
+          
+          <div class="summary-item" *ngIf="minAmount || maxAmount">
+            <span class="summary-label">
+              <mat-icon>attach_money</mat-icon>
+              Rango de Monto
+            </span>
+            <span class="summary-value">
+              {{ minAmount || '0' | currency:'USD':'symbol':'1.0-0' }} - 
+              {{ maxAmount || '∞' }}
+            </span>
+          </div>
+          
+          <div class="summary-item" *ngIf="searchTerm">
+            <span class="summary-label">
+              <mat-icon>search</mat-icon>
+              Término de Búsqueda
+            </span>
+            <span class="summary-value">{{ searchTerm }}</span>
+          </div>
+          
+          <div class="summary-total" *ngIf="getTotalAmount() > 0">
+            <div class="summary-item">
+              <span class="summary-label">
+                <mat-icon>account_balance</mat-icon>
+                Monto Total
+              </span>
+              <span class="summary-value">{{ getTotalAmount() | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
           </div>
         </div>
       </div>
