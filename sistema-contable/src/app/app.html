@@ -1,12 +1,224 @@
-<div class="app-container">
-  <app-header *ngIf="showHeader"></app-header>
-  
-  <main class="main-content" [class.with-header]="showHeader">
-    <router-outlet></router-outlet>
+<div class="app-container enterprise-layout">
+  <!-- Sidebar Moderno Empresarial -->
+  <aside class="enterprise-sidebar" *ngIf="showHeader" [class.collapsed]="sidebarCollapsed">
+    <!-- Header del Sidebar -->
+    <div class="sidebar-header">
+      <div class="brand-container" [class.collapsed]="sidebarCollapsed">
+        <div class="brand-logo">
+          <span class="material-icons">account_balance</span>
+        </div>
+        <div class="brand-info" *ngIf="!sidebarCollapsed">
+          <h1 class="brand-name">Sistema</h1>
+          <span class="brand-tagline">Contable</span>
+        </div>
+      </div>
+      
+      <button class="sidebar-toggle" (click)="toggleSidebar()" 
+              [attr.aria-label]="sidebarCollapsed ? 'Expandir menú' : 'Contraer menú'">
+        <span class="material-icons">{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</span>
+      </button>
+    </div>
+
+    <!-- Perfil de Usuario -->
+    <div class="user-section" *ngIf="currentUser$ | async as user" [class.collapsed]="sidebarCollapsed">
+      <div class="user-profile-card">
+        <div class="user-avatar-large">
+          <span class="avatar-initials">{{ getUserInitials(user) }}</span>
+          <div class="status-indicator online"></div>
+        </div>
+        <div class="user-details" *ngIf="!sidebarCollapsed">
+          <h3 class="user-name">{{ user.name || 'Usuario' }}</h3>
+          <p class="user-role">Administrador</p>
+          <p class="user-email">{{ user.email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación Principal -->
+    <nav class="sidebar-navigation" *ngIf="currentUser$ | async as user">
+      <div class="nav-section">
+        <div class="nav-section-title" *ngIf="!sidebarCollapsed">Principal</div>
+        
+        <div class="nav-items">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" 
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Dashboard' : null">
+            <span class="nav-icon material-icons">dashboard</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Dashboard</span>
+            <div class="nav-indicator"></div>
+          </a>
+          
+          <a routerLink="/users" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Usuarios' : null">
+            <span class="nav-icon material-icons">group</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Usuarios</span>
+            <div class="nav-indicator"></div>
+          </a>
+          
+          <a routerLink="/services" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Servicios' : null">
+            <span class="nav-icon material-icons">work_outline</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Servicios</span>
+            <div class="nav-indicator"></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title" *ngIf="!sidebarCollapsed">Tributario</div>
+        
+        <div class="nav-items">
+          <a routerLink="/form21" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Formulario 21' : null">
+            <span class="nav-icon material-icons">description</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Formulario 21</span>
+            <div class="nav-indicator"></div>
+          </a>
+          
+          <a routerLink="/reports" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Reportes' : null">
+            <span class="nav-icon material-icons">assessment</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Reportes</span>
+            <span class="nav-badge" *ngIf="!sidebarCollapsed">5</span>
+            <div class="nav-indicator"></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title" *ngIf="!sidebarCollapsed">Gestión</div>
+        
+        <div class="nav-items">
+          <a routerLink="/nomina" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Nómina' : null">
+            <span class="nav-icon material-icons">people</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Nómina</span>
+            <div class="nav-indicator"></div>
+          </a>
+          
+          <a routerLink="/contabilidad" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Contabilidad' : null">
+            <span class="nav-icon material-icons">account_balance_wallet</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Contabilidad</span>
+            <div class="nav-indicator"></div>
+          </a>
+          
+          <a routerLink="/documentos" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Documentos' : null">
+            <span class="nav-icon material-icons">folder</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Documentos</span>
+            <span class="nav-badge" *ngIf="!sidebarCollapsed">12</span>
+            <div class="nav-indicator"></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title" *ngIf="!sidebarCollapsed">Sistema</div>
+        
+        <div class="nav-items">
+          <a routerLink="/configuracion" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Configuración' : null">
+            <span class="nav-icon material-icons">settings</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Configuración</span>
+            <div class="nav-indicator"></div>
+          </a>
+          
+          <a routerLink="/auditoria" routerLinkActive="active" class="nav-item"
+             [class.collapsed]="sidebarCollapsed"
+             [attr.title]="sidebarCollapsed ? 'Auditoría' : null">
+            <span class="nav-icon material-icons">security</span>
+            <span class="nav-text" *ngIf="!sidebarCollapsed">Auditoría</span>
+            <div class="nav-indicator"></div>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Acciones del Sidebar -->
+    <div class="sidebar-actions">
+      <!-- Notificaciones -->
+      <button class="action-button notification-button" 
+              [class.collapsed]="sidebarCollapsed"
+              [attr.title]="sidebarCollapsed ? 'Notificaciones (3)' : null">
+        <span class="material-icons">notifications</span>
+        <span class="action-text" *ngIf="!sidebarCollapsed">Notificaciones</span>
+        <span class="action-badge">3</span>
+      </button>
+      
+      <!-- Configuración -->
+      <button class="action-button settings-button"
+              [class.collapsed]="sidebarCollapsed"
+              [attr.title]="sidebarCollapsed ? 'Configuración' : null">
+        <span class="material-icons">settings</span>
+        <span class="action-text" *ngIf="!sidebarCollapsed">Configuración</span>
+      </button>
+      
+      <!-- Logout -->
+      <button class="action-button logout-button" (click)="logout()"
+              [class.collapsed]="sidebarCollapsed"
+              [attr.title]="sidebarCollapsed ? 'Cerrar sesión' : null">
+        <span class="material-icons">logout</span>
+        <span class="action-text" *ngIf="!sidebarCollapsed">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content-area" [class.with-sidebar]="showHeader" [class.sidebar-collapsed]="sidebarCollapsed">
+    <!-- Top Bar para móvil y acciones rápidas -->
+    <header class="top-bar" *ngIf="showHeader">
+      <div class="top-bar-content">
+        <button class="mobile-menu-toggle" (click)="toggleSidebar()" *ngIf="isMobile">
+          <span class="material-icons">menu</span>
+        </button>
+        
+        <div class="page-title">
+          <h1>{{ getPageTitle() }}</h1>
+          <nav class="breadcrumb">
+            <span class="breadcrumb-item">Inicio</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-item current">{{ getPageTitle() }}</span>
+          </nav>
+        </div>
+        
+        <div class="top-bar-actions">
+          <button class="quick-action-btn search-btn">
+            <span class="material-icons">search</span>
+          </button>
+          
+          <button class="quick-action-btn help-btn">
+            <span class="material-icons">help_outline</span>
+          </button>
+          
+          <div class="user-menu-trigger" *ngIf="currentUser$ | async as user">
+            <div class="user-avatar-small">
+              <span>{{ getUserInitials(user) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Área de Contenido -->
+    <div class="content-area">
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
   </main>
 
+  <!-- Overlay para móvil -->
+  <div class="mobile-overlay" *ngIf="isMobile && !sidebarCollapsed" (click)="toggleSidebar()"></div>
 
-  
   <!-- Notificaciones Toast -->
   <app-notification-toast></app-notification-toast>
 </div>

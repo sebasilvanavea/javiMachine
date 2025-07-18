@@ -1,0 +1,116 @@
+<div class="sidebar-container" [class.collapsed]="isCollapsed">
+  <!-- Logo y Brand -->
+  <div class="sidebar-header">
+    <div class="brand-section" [class.collapsed]="isCollapsed">
+      <div class="brand-icon">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="brand-text" *ngIf="!isCollapsed">
+        <h2 class="brand-title">Sistema</h2>
+        <p class="brand-subtitle">Contable</p>
+      </div>
+    </div>
+    
+    <button mat-icon-button 
+            class="collapse-btn"
+            (click)="toggleSidebar()"
+            matTooltip="{{ isCollapsed ? 'Expandir menú' : 'Contraer menú' }}"
+            matTooltipPosition="right">
+      <mat-icon>{{ isCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- User Profile Section -->
+  <div class="user-profile" *ngIf="currentUser$ | async as user" [class.collapsed]="isCollapsed">
+    <div class="user-avatar">
+      <div class="avatar-circle">
+        <span class="avatar-initials">{{ getUserInitials(user) }}</span>
+      </div>
+    </div>
+    <div class="user-info" *ngIf="!isCollapsed">
+      <p class="user-name">{{ user.name || 'Usuario' }}</p>
+      <p class="user-email">{{ user.email }}</p>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title" *ngIf="!isCollapsed">Principal</div>
+      
+      <div class="nav-items">
+        <div *ngFor="let item of menuItems" class="nav-item-container">
+          <!-- Menu item principal -->
+          <button mat-button 
+                  class="nav-item"
+                  [class.active]="isRouteActive(item.route)"
+                  [class.collapsed]="isCollapsed"
+                  (click)="navigateTo(item.route)"
+                  [matTooltip]="isCollapsed ? item.label : ''"
+                  matTooltipPosition="right">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
+            <mat-icon class="nav-arrow" *ngIf="item.children && !isCollapsed">expand_more</mat-icon>
+            <span class="nav-badge" 
+                  *ngIf="item.badge && item.badge > 0"
+                  [class.collapsed]="isCollapsed">{{ item.badge }}</span>
+          </button>
+
+          <!-- Submenu items -->
+          <div class="nav-submenu" *ngIf="item.children && !isCollapsed && isRouteActive(item.route)">
+            <button mat-button 
+                    class="nav-subitem"
+                    *ngFor="let subitem of item.children"
+                    [class.active]="isRouteActive(subitem.route)"
+                    (click)="navigateTo(subitem.route)">
+              <mat-icon class="nav-subicon">{{ subitem.icon }}</mat-icon>
+              <span class="nav-sublabel">{{ subitem.label }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bottom Actions -->
+  <div class="sidebar-footer">
+    <mat-divider></mat-divider>
+    
+    <!-- Notifications -->
+    <button mat-button 
+            class="footer-item"
+            [class.collapsed]="isCollapsed"
+            matTooltip="{{ isCollapsed ? 'Notificaciones' : '' }}"
+            matTooltipPosition="right">
+      <mat-icon class="footer-icon" [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">
+        notifications
+      </mat-icon>
+      <span class="footer-label" *ngIf="!isCollapsed">Notificaciones</span>
+    </button>
+
+    <!-- Settings -->
+    <button mat-button 
+            class="footer-item"
+            [class.collapsed]="isCollapsed"
+            matTooltip="{{ isCollapsed ? 'Configuración' : '' }}"
+            matTooltipPosition="right">
+      <mat-icon class="footer-icon">settings</mat-icon>
+      <span class="footer-label" *ngIf="!isCollapsed">Configuración</span>
+    </button>
+
+    <!-- Logout -->
+    <button mat-button 
+            class="footer-item logout-btn"
+            [class.collapsed]="isCollapsed"
+            (click)="logout()"
+            matTooltip="{{ isCollapsed ? 'Cerrar sesión' : '' }}"
+            matTooltipPosition="right">
+      <mat-icon class="footer-icon">logout</mat-icon>
+      <span class="footer-label" *ngIf="!isCollapsed">Cerrar sesión</span>
+    </button>
+  </div>
+</div>

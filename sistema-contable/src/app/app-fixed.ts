@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
-import { Header } from './components/layout/header/header';
+// import { Header } from './components/layout/header/header'; // No usado en esta versión
 import { AuthService } from './services/auth.service';
 import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
 
@@ -12,7 +12,6 @@ import { NotificationToastComponent } from './components/notification-toast/noti
   imports: [
     CommonModule,
     RouterOutlet,
-    Header,
     NotificationToastComponent
   ],
   templateUrl: './app.html',
@@ -24,6 +23,8 @@ export class App implements OnInit {
 
   title = 'Sistema Contable';
   showHeader = true;
+  sidebarCollapsed = false;
+  isMobile = false;
   currentUser$ = this.authService.currentUser$;
 
   ngOnInit(): void {
@@ -40,5 +41,40 @@ export class App implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  getUserInitials(user: any): string {
+    if (user.name) {
+      const nameParts = user.name.split(' ');
+      if (nameParts.length >= 2) {
+        return nameParts[0].charAt(0) + nameParts[1].charAt(0);
+      }
+      return nameParts[0].charAt(0);
+    }
+    return user.email.charAt(0).toUpperCase();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
+  getPageTitle(): string {
+    const url = this.router.url;
+    if (url.includes('/dashboard')) return 'Dashboard';
+    if (url.includes('/users')) return 'Usuarios';
+    if (url.includes('/services')) return 'Servicios';
+    if (url.includes('/reports')) return 'Reportes';
+    if (url.includes('/form21')) return 'Formulario 21';
+    if (url.includes('/nomina')) return 'Nómina';
+    if (url.includes('/contabilidad')) return 'Contabilidad';
+    if (url.includes('/documentos')) return 'Documentos';
+    if (url.includes('/configuracion')) return 'Configuración';
+    if (url.includes('/auditoria')) return 'Auditoría';
+    return 'Sistema Contable';
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

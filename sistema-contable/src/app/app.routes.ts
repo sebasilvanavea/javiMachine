@@ -77,6 +77,36 @@ export const routes: Routes = [
     title: 'Reportes Avanzados - Sistema Contable'
   },
   {
+    path: 'nomina',
+    loadComponent: () => import('./components/nomina/nomina.component').then(m => m.NominaComponent),
+    canActivate: [authGuard],
+    title: 'Nómina - Sistema Contable'
+  },
+  {
+    path: 'contabilidad',
+    loadComponent: () => import('./components/contabilidad/contabilidad.component').then(m => m.ContabilidadComponent),
+    canActivate: [authGuard],
+    title: 'Contabilidad - Sistema Contable'
+  },
+  {
+    path: 'documentos',
+    loadComponent: () => import('./components/documentos/documentos.component').then(m => m.DocumentosComponent),
+    canActivate: [authGuard],
+    title: 'Documentos - Sistema Contable'
+  },
+  {
+    path: 'configuracion',
+    loadComponent: () => import('./components/configuracion/configuracion.component').then(m => m.ConfiguracionComponent),
+    canActivate: [authGuard],
+    title: 'Configuración - Sistema Contable'
+  },
+  {
+    path: 'auditoria',
+    loadComponent: () => import('./components/auditoria/auditoria.component').then(m => m.AuditoriaComponent),
+    canActivate: [authGuard],
+    title: 'Auditoría - Sistema Contable'
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }
