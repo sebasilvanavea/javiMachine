@@ -1,20 +1,30 @@
 <div class="user-list-container">
-  <!-- Header con título y botón agregar -->
-  <div class="list-header">
-    <div class="header-info">
-      <h1>
-        <mat-icon>group</mat-icon>
-        Gestión de Usuarios
-      </h1>
-      <p>Administra todos los usuarios del sistema contable</p>
+  <!-- Header Homologado -->
+  <div class="page-header users-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon>group</mat-icon>
+          Gestión de Usuarios
+        </h1>
+        <p class="page-subtitle">Administra todos los usuarios del sistema contable</p>
+        <div class="page-breadcrumb">
+          <span class="breadcrumb-item">Inicio</span>
+          <span class="breadcrumb-item current">Usuarios</span>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button mat-icon-button title="Exportar usuarios">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button mat-raised-button 
+                class="primary-btn"
+                (click)="addNewUser()">
+          <mat-icon>add</mat-icon>
+          Nuevo Usuario
+        </button>
+      </div>
     </div>
-    <button mat-raised-button 
-            color="primary" 
-            class="add-button"
-            (click)="addNewUser()">
-      <mat-icon>add</mat-icon>
-      Nuevo Usuario
-    </button>
   </div>
 
   <!-- Barra de búsqueda y filtros -->

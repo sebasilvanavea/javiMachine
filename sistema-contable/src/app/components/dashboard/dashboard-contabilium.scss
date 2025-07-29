@@ -1,56 +1,180 @@
 /* ===== DASHBOARD ESTILO CONTABILIUM ===== */
 
 .contabilium-dashboard {
-  min-height: 100vh;
+  height: 100%; // Cambiar de min-height: 100vh a height: 100%
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   font-family: var(--contabilium-font-family);
-}
+  padding: 1.5rem;
+  overflow-y: auto; // Agregar overflow para permitir scroll
+  overflow-x: hidden;
+  
+  // Custom scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 
-/* HERO SECTION CONTABILIUM */
-.contabilium-hero {
-  background: linear-gradient(135deg, 
-    var(--contabilium-primary) 0%, 
-    var(--contabilium-primary-dark) 50%,
-    #1e3a8a 100%);
-  padding: var(--contabilium-space-12) var(--contabilium-space-8);
-  margin-bottom: var(--contabilium-space-8);
-  position: relative;
-  overflow: hidden;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-    opacity: 0.3;
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: #3B82F6;
+  }
+
+  // Header homologado
+  .dashboard-header {
+    padding: 2rem;
+    background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    width: 100%;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      max-width: 100%;
+    }
+
+    .title-section {
+      flex: 1;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.75rem;
+      font-weight: 600;
+
+      mat-icon {
+        color: white;
+        margin-right: 0.75rem;
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .page-subtitle {
+      margin: 0 0 1rem 0;
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+
+    .page-breadcrumb {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      opacity: 0.8;
+
+      .breadcrumb-item {
+        &.current {
+          font-weight: 500;
+        }
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-metrics-preview {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+
+      @media (max-width: 768px) {
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .metric-item {
+        text-align: center;
+        color: white;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        min-width: 120px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+          min-width: 100px;
+          padding: 0.75rem;
+        }
+        
+        .metric-value {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 0.25rem;
+
+          @media (max-width: 768px) {
+            font-size: 1.25rem;
+          }
+        }
+        
+        .metric-label {
+          display: block;
+          font-size: 0.875rem;
+          opacity: 0.9;
+
+          @media (max-width: 768px) {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    // Responsive para el header
+    @media (max-width: 768px) {
+      padding: 1.5rem;
+
+      .header-content {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 1.5rem;
+
+        mat-icon {
+          font-size: 1.75rem;
+          width: 1.75rem;
+          height: 1.75rem;
+        }
+      }
+    }
   }
 }
 
-.contabilium-hero-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 2;
-  gap: var(--contabilium-space-12);
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    gap: var(--contabilium-space-8);
-  }
-}
-
-/* HERO LEFT - CONTENIDO PRINCIPAL */
-.hero-left {
-  flex: 1;
-  color: white;
-}
-
+/* ELEMENTOS DEL HERO RESTANTES */
 .hero-badge {
   display: inline-flex;
   align-items: center;

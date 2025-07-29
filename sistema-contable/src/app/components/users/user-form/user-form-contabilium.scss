@@ -1,9 +1,37 @@
 @import '../../../../theme/contabilium-theme.scss';
 
 .contabilium-user-form {
-  min-height: 100vh;
+  height: 100%; // Cambiar de min-height: 100vh a height: 100%
   background: linear-gradient(135deg, $background-light 0%, rgba(248, 250, 252, 0.8) 100%);
   padding-bottom: 40px;
+  overflow-y: auto; // Agregar overflow para permitir scroll
+  overflow-x: hidden;
+  
+  // Custom scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: $primary;
+  }
 }
 
 // === HERO SECTION ===

@@ -1,6 +1,9 @@
 /* ===== TEMA GLOBAL CONTABILIUM ===== */
 @use './app/theme/contabilium-theme.scss';
 
+/* ===== HEADERS HOMOLOGADOS ===== */
+@use './app/shared/styles/page-header.scss';
+
 /* ===== SISTEMA CONTABLE - DISEÑO UI/UX PROFESIONAL ===== */
 
 // Importar fuentes modernas

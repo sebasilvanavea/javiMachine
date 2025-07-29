@@ -49,19 +49,25 @@
                   class="nav-item"
                   [class.active]="isRouteActive(item.route)"
                   [class.collapsed]="isCollapsed"
-                  (click)="navigateTo(item.route)"
+                  (click)="item.children ? toggleSubmenu(item.route) : navigateTo(item.route)"
                   [matTooltip]="isCollapsed ? item.label : ''"
                   matTooltipPosition="right">
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             <span class="nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
-            <mat-icon class="nav-arrow" *ngIf="item.children && !isCollapsed">expand_more</mat-icon>
+            <mat-icon class="nav-arrow" 
+                      *ngIf="item.children && !isCollapsed"
+                      [style.transform]="isSubmenuExpanded(item.route) ? 'rotate(180deg)' : 'rotate(0deg)'">
+              expand_more
+            </mat-icon>
             <span class="nav-badge" 
                   *ngIf="item.badge && item.badge > 0"
                   [class.collapsed]="isCollapsed">{{ item.badge }}</span>
           </button>
 
           <!-- Submenu items -->
-          <div class="nav-submenu" *ngIf="item.children && !isCollapsed && isRouteActive(item.route)">
+          <div class="nav-submenu" 
+               *ngIf="item.children && !isCollapsed"
+               [class.expanded]="isSubmenuExpanded(item.route)">
             <button mat-button 
                     class="nav-subitem"
                     *ngFor="let subitem of item.children"

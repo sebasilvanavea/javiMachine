@@ -1,21 +1,27 @@
 <div class="contabilium-form21">
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <div class="hero-text">
-        <div class="hero-icon">
+<div class="contabilium-form21">
+  <!-- Header Homologado -->
+  <div class="page-header form21-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
           <mat-icon>assignment</mat-icon>
-        </div>
-        <div class="hero-title">
-          <h1>Formulario 21</h1>
-          <p>Declaración de Impuesto Anual a la Renta</p>
+          Formulario 21
+        </h1>
+        <p class="page-subtitle">Declaración de Impuesto Anual a la Renta</p>
+        <div class="page-breadcrumb">
+          <span class="breadcrumb-item">Inicio</span>
+          <span class="breadcrumb-item current">Formulario 21</span>
         </div>
       </div>
-      <div class="hero-status" *ngIf="currentStatus">
-        <div class="status-indicator" [class]="currentStatus">
+      <div class="action-buttons">
+        <div class="status-indicator" *ngIf="currentStatus" [class]="currentStatus">
           <mat-icon>{{getStatusIcon(currentStatus)}}</mat-icon>
           <span>{{getStatusLabel(currentStatus)}}</span>
         </div>
+        <button mat-icon-button title="Ayuda">
+          <mat-icon>help_outline</mat-icon>
+        </button>
       </div>
     </div>
   </div>

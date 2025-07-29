@@ -42,7 +42,10 @@ export class Sidebar implements OnInit {
 
   currentUser$ = this.authService.currentUser$;
   isCollapsed = false;
+  isMobileOpen = false;
   activeRoute = '';
+  expandedMenus: Set<string> = new Set();
+  isMobile = false;
 
   menuItems: MenuItem[] = [
     {
@@ -90,14 +93,61 @@ export class Sidebar implements OnInit {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.activeRoute = event.url;
+        this.autoExpandActiveMenu();
       });
 
     // Establecer ruta inicial
     this.activeRoute = this.router.url;
+    this.autoExpandActiveMenu();
+    
+    this.checkIfMobile();
+    window.addEventListener('resize', () => this.checkIfMobile());
+  }
+
+  private checkIfMobile(): void {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) {
+      this.isMobileOpen = false;
+    }
+  }
+
+  private autoExpandActiveMenu(): void {
+    this.menuItems.forEach(item => {
+      if (item.children) {
+        const hasActiveChild = item.children.some(child => 
+          this.activeRoute === child.route || this.activeRoute.startsWith(child.route + '/')
+        );
+        if (hasActiveChild) {
+          this.expandedMenus.add(item.route);
+        }
+      }
+    });
   }
 
   toggleSidebar(): void {
-    this.isCollapsed = !this.isCollapsed;
+    if (this.isMobile) {
+      this.isMobileOpen = !this.isMobileOpen;
+    } else {
+      this.isCollapsed = !this.isCollapsed;
+    }
+  }
+
+  closeMobileSidebar(): void {
+    if (this.isMobile) {
+      this.isMobileOpen = false;
+    }
+  }
+
+  toggleSubmenu(route: string): void {
+    if (this.expandedMenus.has(route)) {
+      this.expandedMenus.delete(route);
+    } else {
+      this.expandedMenus.add(route);
+    }
+  }
+
+  isSubmenuExpanded(route: string): boolean {
+    return this.expandedMenus.has(route);
   }
 
   isRouteActive(route: string): boolean {
@@ -106,6 +156,9 @@ export class Sidebar implements OnInit {
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
+    if (this.isMobile) {
+      this.isMobileOpen = false;
+    }
   }
 
   logout(): void {

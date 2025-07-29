@@ -1,15 +1,18 @@
 <div class="contabilium-dashboard">
-  <!-- Header Principal estilo Contabilium -->
-  <header class="contabilium-hero">
-    <div class="contabilium-hero-content">
-      <div class="hero-left">
-        <div class="hero-badge">
-          <mat-icon>trending_up</mat-icon>
-          Dashboard
+  <!-- Header Homologado -->
+  <div class="page-header dashboard-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon>dashboard</mat-icon>
+          Panel de Control
+        </h1>
+        <p class="page-subtitle">Gestiona tu contabilidad de forma inteligente</p>
+        <div class="page-breadcrumb">
+          <span class="breadcrumb-item current">Dashboard</span>
         </div>
-        <h1 class="hero-title">Panel de Control</h1>
-        <p class="hero-subtitle">Gestiona tu contabilidad de forma inteligente</p>
-        
+      </div>
+      <div class="action-buttons">
         <div class="hero-metrics-preview">
           <div class="metric-item">
             <span class="metric-value">{{(stats$ | async)?.totalUsers || 0}}</span>
@@ -24,56 +27,12 @@
             <span class="metric-label">Servicios</span>
           </div>
         </div>
-      </div>
-      
-      <div class="hero-right">
-        <div class="hero-actions">
-          <button mat-flat-button 
-                  color="primary"
-                  class="contabilium-btn primary"
-                  (click)="refreshDashboard()"
-                  [disabled]="(isLoadingStats$ | async)">
-            <mat-icon>refresh</mat-icon>
-            Actualizar
-          </button>
-          <button mat-flat-button 
-                  color="accent"
-                  class="contabilium-btn secondary"
-                  routerLink="/reports">
-            <mat-icon>analytics</mat-icon>
-            Reportes
-          </button>
-          <button mat-stroked-button 
-                  class="contabilium-btn secondary"
-                  (click)="exportReport()">
-            <mat-icon>download</mat-icon>
-            Exportar
-          </button>
-        </div>
-        
-        <!-- Estado del sistema en tiempo real -->
-        <div class="system-status-card">
-          <div class="status-header">
-            <mat-icon class="status-icon">monitor_heart</mat-icon>
-            <span>Estado del Sistema</span>
-            <div class="status-indicator active"></div>
-          </div>
-          <div class="status-details">
-            <div class="status-item" [class.online]="systemStatus.database">
-              <mat-icon>storage</mat-icon>
-              <span>Base de Datos</span>
-              <div class="status-dot" [class.active]="systemStatus.database"></div>
-            </div>
-            <div class="status-item" [class.online]="systemStatus.services">
-              <mat-icon>cloud_done</mat-icon>
-              <span>Servicios Cloud</span>
-              <div class="status-dot" [class.active]="systemStatus.services"></div>
-            </div>
-          </div>
-        </div>
+        <button mat-icon-button title="Actualizar datos">
+          <mat-icon>refresh</mat-icon>
+        </button>
       </div>
     </div>
-  </header>
+  </div>
 
   <!-- Contenido Principal -->
   <main class="dashboard-content">

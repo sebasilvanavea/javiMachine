@@ -1,20 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
-// import { Header } from './components/layout/header/header'; // No usado en esta versión
 import { AuthService } from './services/auth.service';
-import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
+import { Sidebar } from './components/layout/sidebar/sidebar';
 
 @Component({
   selector: 'app-root',
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    NotificationToastComponent
+    Sidebar
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

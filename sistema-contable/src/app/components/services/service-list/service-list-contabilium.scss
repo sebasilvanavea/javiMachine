@@ -8,142 +8,22 @@
   @include mobile {
     padding: 16px;
   }
-}
 
-// === HERO SECTION ===
-.hero-section {
-  margin-bottom: 32px;
+  // Header homologado
+  .services-header {
+    @include page-header-base;
+    background: var(--header-gradient-primary);
+    margin-bottom: 2rem;
 
-  .hero-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 32px;
-    background: linear-gradient(135deg, $primary, $primary-dark);
-    border-radius: 20px;
-    color: white;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 200px;
-      height: 200px;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><circle cx="50" cy="50" r="10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>');
-      opacity: 0.3;
-      transform: translateX(50%) translateY(-50%);
+    .header-content {
+      @include page-header-content;
     }
 
-    @include mobile {
-      flex-direction: column;
-      gap: 20px;
-      text-align: center;
-      padding: 24px 20px;
-    }
-
-    .hero-text {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      z-index: 1;
-
-      @include mobile {
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .hero-icon {
-        width: 64px;
-        height: 64px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-
-        mat-icon {
-          font-size: 32px;
-          width: 32px;
-          height: 32px;
-          color: white;
-        }
-      }
-
-      .hero-title {
-        h1 {
-          margin: 0 0 8px;
-          font-family: $font-heading;
-          font-size: 36px;
-          font-weight: 700;
-          line-height: 1.2;
-
-          @include mobile {
-            font-size: 28px;
-          }
-        }
-
-        p {
-          margin: 0;
-          font-size: 16px;
-          opacity: 0.9;
-          font-weight: 400;
-
-          @include mobile {
-            font-size: 14px;
-          }
-        }
-      }
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      z-index: 1;
-
-      @include mobile {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .primary-btn {
-        background: white;
-        color: $primary;
-        font-weight: 600;
-        padding: 12px 24px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        mat-icon {
-          margin-right: 8px;
-        }
-      }
-
-      .export-btn {
-        border-color: rgba(255, 255, 255, 0.5);
-        color: white;
-        font-weight: 500;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: white;
-        }
-
-        mat-icon {
-          margin-right: 8px;
-        }
-      }
+    .page-title mat-icon {
+      color: var(--primary-color);
+      margin-right: 0.75rem;
     }
   }
-}
 
 // === STATS SECTION ===
 .stats-section {
