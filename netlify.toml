@@ -3,10 +3,10 @@
   base = "sistema-contable"
   
   # Directorio de publicación después del build
-  publish = "sistema-contable/dist/sistema-contable/browser"
+  publish = "dist/sistema-contable/browser"
   
-  # Comando de build para Netlify
-  command = "npm run build:netlify"
+  # Comando de build para Netlify con fix para dependencias
+  command = "npm install --legacy-peer-deps && npm run build"
 
 [build.environment]
   # Versión de Node.js
@@ -14,6 +14,7 @@
   
   # Variables para Angular
   NODE_ENV = "production"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # Redirecciones para Angular Router (SPA)
 [[redirects]]

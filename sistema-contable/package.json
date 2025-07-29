@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:netlify": "ng build --configuration production",
+    "build:netlify": "npm install --legacy-peer-deps && ng build --configuration production",
+    "postinstall": "npm install --legacy-peer-deps --silent",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
