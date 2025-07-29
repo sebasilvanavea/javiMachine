@@ -1,0 +1,46 @@
+[build]
+  # Directorio de publicación después del build
+  publish = "dist/sistema-contable/browser"
+  
+  # Comando de build para Netlify
+  command = "npm run build:netlify"
+
+[build.environment]
+  # Versión de Node.js
+  NODE_VERSION = "18"
+  
+  # Variables para Angular
+  NODE_ENV = "production"
+
+# Redirecciones para Angular Router (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers para optimización
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Configuración para Firebase (si usas Firebase)
+[[headers]]
+  for = "/__/firebase/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
