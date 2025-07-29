@@ -5,8 +5,8 @@
   # Directorio de publicación después del build
   publish = "dist/sistema-contable/browser"
   
-  # Comando de build simplificado
-  command = "npm install --legacy-peer-deps && npm run build:netlify"
+  # Comando usando npx para asegurar que ng se encuentre
+  command = "npm install --legacy-peer-deps && npx ng build --configuration production"
 
 [build.environment]
   # Versión de Node.js
